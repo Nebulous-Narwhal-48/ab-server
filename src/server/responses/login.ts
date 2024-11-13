@@ -1,4 +1,4 @@
-import { encodeUpgrades, ServerPackets, SERVER_PACKETS } from '@airbattle/protocol';
+import { encodeUpgrades, ServerPackets, SERVER_PACKETS, GAME_TYPES } from '@airbattle/protocol';
 import { CONNECTIONS_SEND_PACKETS, RESPONSE_LOGIN, TIMELINE_BEFORE_GAME_START } from '../../events';
 import { LoginServerConfig, MainConnectionId, Player } from '../../types';
 import { System } from '../system';
@@ -22,6 +22,7 @@ export default class LoginResponse extends System {
     const config: LoginServerConfig = {
       sf: this.config.server.scaleFactor,
       botsNamePrefix: this.config.bots.prefix,
+      tdmMode: this.config.server.typeId == GAME_TYPES.FFA && this.config.ffa.tdmMode,
     };
 
     if (this.config.connections.afkDisconnectTimeout) {

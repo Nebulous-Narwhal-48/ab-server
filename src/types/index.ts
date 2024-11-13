@@ -366,6 +366,11 @@ export interface LoginServerConfig {
    * Auto-prefix for the bots name.
    */
   botsNamePrefix: string;
+
+  /**
+   * Enable TDM mode
+   */
+  tdmMode: boolean;
 }
 
 export interface AdminPlayersListItem {

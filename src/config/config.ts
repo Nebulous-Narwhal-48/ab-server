@@ -349,6 +349,10 @@ export interface GameServerConfigInterface {
      * Add periodic CTF-like base infernos.
      */
     baseInfernos: boolean;
+
+    /**
+     */
+    tdmMode: boolean;
   };
 
   btr: {
@@ -658,6 +662,7 @@ const config: GameServerConfigInterface = {
   ffa: {
     spawnZoneName: strValue(process.env.FFA_SPAWN_ZONE_NAME, FFA_DEFAULT_SPAWN_ZONE),
     baseInfernos: boolValue(process.env.FFA_BASE_INFERNOS, false),
+    tdmMode: boolValue(process.env.FFA_TDM_MODE, false),
   },
 
   btr: {
@@ -670,6 +675,9 @@ config.server.type = config.server.type.toLocaleUpperCase();
 
 if (has(GAME_TYPES, config.server.type)) {
   config.server.typeId = GAME_TYPES[config.server.type];
+} else if (config.server.type == "TDM") {
+  config.server.typeId = GAME_TYPES["FFA"];
+  config.ffa.tdmMode = true;
 } else {
   config.server.typeId = -1;
 }
