@@ -39,6 +39,14 @@ export default class UserStatsPeriodic extends System {
     } else {
       this.save();
     }
+
+    if (this.config.skins.enable) {
+      if (existsSync(this.config.accounts.skins.path)) {
+        this.load_skins();
+      } else {
+        this.save_skins();
+      }
+    }
   }
 
   onSecondTick(): void {
@@ -51,6 +59,10 @@ export default class UserStatsPeriodic extends System {
 
       if (hasChanges && !this.saveInProgress) {
         this.save();
+      }
+
+      if (this.storage.skins.hasChanges && !this.saveInProgress) {
+        this.save_skins();
       }
 
       this.seconds = 0;
@@ -122,6 +134,27 @@ export default class UserStatsPeriodic extends System {
     }
   }
 
+  load_skins() {
+    try {
+      const data = readFileSync(this.config.accounts.skins.path);
+
+      this.storage.skins.byUrl = new Map(JSON.parse(data.toString()).map(x=>[x.url, x]));
+
+      var groupBy = function(xs, key) {
+        return xs.reduce(function(rv, x) {
+          (rv[x[key]] = rv[x[key]] || []).push(x);
+          return rv;
+        }, {});
+      };
+      
+      this.storage.skins.byUser = new Map(Object.entries(groupBy(JSON.parse(data.toString()), "user_id")));
+      
+    } catch (err) {
+      this.log.error('Error while loading skins: %o', { error: err.stack });
+      // this.renameFile(this.config.accounts.userStats.path, 'error');
+    }
+  }
+
   /**
    * Initiate data saving task.
    */
@@ -155,6 +188,19 @@ export default class UserStatsPeriodic extends System {
       args = [FILE_FORMAT.USER_STATS, [...users.list.entries()]];
       users.hasChanges = false;
     }
+
+    this.worker.postMessage({ event: USERS_WORKER_SAVE_STATS, args });
+  }
+
+  save_skins() {
+    const { skins } = this.storage;
+    console.log('save_skins', skins);
+    let args: [FILE_FORMAT, any];
+
+    this.saveInProgress = true;
+
+    args = [FILE_FORMAT.SKINS, skins.byUrl];
+    skins.hasChanges = false;
 
     this.worker.postMessage({ event: USERS_WORKER_SAVE_STATS, args });
   }

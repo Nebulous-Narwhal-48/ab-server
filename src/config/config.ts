@@ -231,6 +231,13 @@ export interface GameServerConfigInterface {
     userStats: {
       path: string;
     };
+
+    /**
+     * Skins DB
+     */
+    skins: {
+      path: string;
+    }
   };
 
   sync: {
@@ -380,6 +387,16 @@ export interface GameServerConfigInterface {
      */
     prefix: string;
   };
+
+  skins: {
+    enable: boolean;
+
+    /**
+     * Min level that can add skins
+     */
+    minUserLevel: number;
+  };
+
 }
 
 const appRootDir = resolve(__dirname, '../');
@@ -586,6 +603,10 @@ const config: GameServerConfigInterface = {
     userStats: {
       path: resolvePath(strValue(process.env.STATS_PATH, '../data/user-stats.json')),
     },
+
+    skins: {
+      path: resolvePath(strValue(process.env.STATS_PATH, '../data/skins.json')),
+    },
   },
 
   sync: {
@@ -663,6 +684,11 @@ const config: GameServerConfigInterface = {
   btr: {
     firewallSpeed: intValue(process.env.BTR_FIREWALL_SPEED, BTR_DEFAULT_FIREWALL_SPEED),
     matchWaitTime: intValue(process.env.BTR_MATCH_WAIT_TIME, BTR_DEFAULT_MATCH_WAIT_TIME),
+  },
+
+  skins: {
+    enable: boolValue(process.env.SKINS_ENABLE, false),
+    minUserLevel: intValue(process.env.SKINS_MIN_USER_LEVEL, 20),
   },
 };
 

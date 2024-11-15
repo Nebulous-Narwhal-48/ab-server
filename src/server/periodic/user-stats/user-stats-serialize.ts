@@ -3,6 +3,7 @@ import fastJson from 'fast-json-stringify';
 export enum FILE_FORMAT {
   USER_STATS = 'user stats',
   SYNC_STATE = 'sync state',
+  SKINS = 'skins',
 }
 
 export const stringifyUserStats = fastJson({

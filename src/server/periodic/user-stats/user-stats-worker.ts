@@ -42,6 +42,11 @@ class UserAccountsWorker {
           stringify = stringifyUserStats;
           path = this.config.accounts.userStats.path;
           break;
+        case FILE_FORMAT.SKINS:
+          stringify = JSON.stringify;
+          data = [...data.values()];
+          path = this.config.accounts.skins.path;
+          break;
         case FILE_FORMAT.SYNC_STATE:
           stringify = stringifySyncState;
           path = this.config.sync.state.path;

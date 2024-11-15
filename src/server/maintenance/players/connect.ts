@@ -16,6 +16,7 @@ import {
 } from '../../../constants';
 import {
   BROADCAST_CHAT_SERVER_WHISPER,
+  BROADCAST_CUSTOM_DATA,
   BROADCAST_PLAYER_LEVEL,
   BROADCAST_PLAYER_NEW,
   BROADCAST_SCORE_BOARD,
@@ -92,6 +93,7 @@ import Velocity from '../../components/velocity';
 import Wins from '../../components/wins';
 import Entity from '../../entity';
 import { System } from '../../system';
+import CustomData from '../../components/custom-data';
 
 export default class GamePlayersConnect extends System {
   private framesPassedSinceLogin = 0;
@@ -134,7 +136,7 @@ export default class GamePlayersConnect extends System {
   /**
    * Create player.
    */
-  onCreatePlayer({ connectionId, name, flag, horizon, userId }): void {
+  onCreatePlayer({ connectionId, name, flag, horizon, userId, customData }): void {
     if (this.storage.playerList.size >= SERVER_MAX_PLAYERS_LIMIT) {
       this.emit(PLAYERS_LIMIT_REACHED, connectionId);
 
@@ -247,6 +249,17 @@ export default class GamePlayersConnect extends System {
       }
 
       player.level.current = convertEarningsToLevel(user.lifetimestats.earnings);
+    }
+
+    /**
+     * Set skin.
+     */
+    if (customData) {
+      let skin = this.storage.skins.byUrl.get(customData.url);
+      if (skin && (!skin.user_id || skin.user_id == userId)) {
+        customData.hash = skin.hash;
+      }
+      player.attach(new CustomData(customData));
     }
 
     this.log.info('Player connected: %o', {
@@ -447,6 +460,10 @@ export default class GamePlayersConnect extends System {
     this.emit(RESPONSE_LOGIN, connectionId);
     this.emit(BROADCAST_PLAYER_NEW, playerId);
     this.emit(RESPONSE_SEND_PING, connectionId);
+
+    if (player.customdata) {
+      this.emit(BROADCAST_CUSTOM_DATA, playerId);
+    }
 
     if (player.alivestatus.current === PLAYERS_ALIVE_STATUSES.ALIVE) {
       this.emit(PLAYERS_APPLY_SHIELD, playerId, PLAYERS_SPAWN_SHIELD_DURATION_MS);
