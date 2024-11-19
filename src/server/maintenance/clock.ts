@@ -4,6 +4,8 @@ import {
   TIMELINE_CLOCK_HALFSECOND,
   TIMELINE_CLOCK_HOUR,
   TIMELINE_CLOCK_MINUTE,
+  TIMELINE_CLOCK_10_SECONDS,
+  TIMELINE_CLOCK_5_SECONDS,
   TIMELINE_CLOCK_SECOND,
   TIMELINE_LOOP_TICK,
 } from '../../events';
@@ -80,6 +82,10 @@ export default class GameClock extends System {
           }
 
           this.emit(TIMELINE_CLOCK_MINUTE, this.minutes, frame);
+        }
+
+        if (this.app.config.ffa.enableFlag && this.seconds % 10 === 0) {
+          this.emit(TIMELINE_CLOCK_10_SECONDS, this.seconds, frame);  
         }
 
         this.emit(TIMELINE_CLOCK_SECOND, this.seconds, frame);

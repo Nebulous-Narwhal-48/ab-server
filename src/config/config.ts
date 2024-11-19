@@ -349,6 +349,11 @@ export interface GameServerConfigInterface {
      * Add periodic CTF-like base infernos.
      */
     baseInfernos: boolean;
+
+    /**
+     * 
+     */
+    enableFlag: boolean;
   };
 
   btr: {
@@ -658,6 +663,7 @@ const config: GameServerConfigInterface = {
   ffa: {
     spawnZoneName: strValue(process.env.FFA_SPAWN_ZONE_NAME, FFA_DEFAULT_SPAWN_ZONE),
     baseInfernos: boolValue(process.env.FFA_BASE_INFERNOS, false),
+    enableFlag: boolValue(process.env.FFA_ENABLE_FLAG, false),
   },
 
   btr: {
