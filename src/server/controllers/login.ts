@@ -97,6 +97,7 @@ export default class LoginMessageHandler extends System {
 
     let userId = '';
     let { flag, name } = msg;
+    let customData = null;
 
     if (msg.protocol !== 5) {
       this.emit(ERRORS_INCORRECT_PROTOCOL, connectionId);
@@ -124,6 +125,11 @@ export default class LoginMessageHandler extends System {
             validSessionData = false;
           }
         }
+
+        if (this.config.skins.enable && has(session, 'custom_data')) {
+          customData = session.custom_data;
+        }
+
       } catch (e) {
         validSessionData = false;
       }
@@ -183,6 +189,7 @@ export default class LoginMessageHandler extends System {
         y: msg.horizonY,
       },
       userId,
+      customData,
     });
   }
 }

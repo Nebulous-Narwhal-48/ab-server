@@ -256,6 +256,19 @@ export class GameStorage {
   public serverPlayerId: number = null;
 
   /**
+   * 
+   */
+  public skins: {
+    hasChanges: boolean, 
+    byUrl: Map<string, {url: string, hash: string, user_id?: string, created_by?: string}>,
+    byUser: Map<string, {url: string, hash: string, user_id?: string, created_by?: string}[]>
+  } = {
+    hasChanges: false,
+    byUrl: new Map(),
+    byUser: new Map(),
+  };
+
+  /**
    * TODO: move in CTF specific storage.
    */
   public ctfFlagBlueId: number = null;

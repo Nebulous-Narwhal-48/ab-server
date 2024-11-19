@@ -5,6 +5,7 @@ import PlayersCommandHandler from './commands/players';
 import ProfileCommandHandler from './commands/profile';
 import RespawnCommandHandler from './commands/respawn';
 import ServerCommandHandler from './commands/server';
+import SkinCommandHandler from './commands/skin';
 import SpectateCommandHandler from './commands/spectate';
 import SpectatorsCommandHandler from './commands/spectators';
 import SuperuserCommandHandler from './commands/su';
@@ -72,6 +73,7 @@ import ChatServerTeamBroadcast from './responses/broadcast/chat-server-team';
 import ChatServerWhisperBroadcast from './responses/broadcast/chat-server-whisper';
 import ChatTeamBroadcast from './responses/broadcast/chat-team';
 import ChatWhisperBroadcast from './responses/broadcast/chat-whisper';
+import CustomDataBroadcast from './responses/broadcast/custom-data';
 import EventBoostBroadcast from './responses/broadcast/event-boost';
 import EventBounceBroadcast from './responses/broadcast/event-bounce';
 import EventRepelBroadcast from './responses/broadcast/event-repel';
@@ -282,6 +284,10 @@ export default abstract class GameManifest {
       }
 
       this.systems = [UserStatsPeriodic];
+    }
+
+    if (this.app.config.skins.enable) {
+      this.systems = [CustomDataBroadcast, SkinCommandHandler];
     }
 
     this.startSystems();

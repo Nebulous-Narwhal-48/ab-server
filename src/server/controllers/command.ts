@@ -17,6 +17,7 @@ import {
   COMMAND_UPGRADE,
   COMMAND_USURP,
   COMMAND_WELCOME,
+  COMMAND_ADD_SKIN,
   ROUTE_COMMAND,
 } from '../../events';
 import { has } from '../../support/objects';
@@ -52,6 +53,7 @@ export default class CommandMessageHandler extends System {
       su: COMMAND_SU,
       upgrades: COMMAND_DROP_UPGRADE,
       welcome: COMMAND_WELCOME,
+      skin: COMMAND_ADD_SKIN,
 
       // CTF only.
       elections: COMMAND_ELECTIONS,
