@@ -366,6 +366,11 @@ export interface GameServerConfigInterface {
      * 
      */
     tdmMode: boolean;
+
+    /**
+     * Enable teams
+     */
+    enableTeams: boolean;
   };
 
   btr: {
@@ -691,6 +696,7 @@ const config: GameServerConfigInterface = {
     baseInfernos: boolValue(process.env.FFA_BASE_INFERNOS, false),
     enableFlag: boolValue(process.env.FFA_ENABLE_FLAG, false),
     tdmMode: boolValue(process.env.FFA_TDM_MODE, false),
+    enableTeams: boolValue(process.env.FFA_ENABLE_TEAMS, false),
   },
 
   btr: {

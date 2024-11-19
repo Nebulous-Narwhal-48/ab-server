@@ -33,3 +33,7 @@ export const COMMAND_USURP = 'COMMAND_USURP';
 export const COMMAND_WELCOME = 'COMMAND_WELCOME';
 
 export const COMMAND_ADD_SKIN = 'COMMAND_ADD_SKIN';
+
+export const COMMAND_INVITE = 'COMMAND_INVITE';
+
+export const COMMAND_JOIN = 'COMMAND_JOIN';

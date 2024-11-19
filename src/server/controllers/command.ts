@@ -18,6 +18,8 @@ import {
   COMMAND_USURP,
   COMMAND_WELCOME,
   COMMAND_ADD_SKIN,
+  COMMAND_INVITE,
+  COMMAND_JOIN,
   ROUTE_COMMAND,
 } from '../../events';
 import { has } from '../../support/objects';
@@ -60,6 +62,10 @@ export default class CommandMessageHandler extends System {
       match: COMMAND_MATCH,
       usurp: COMMAND_USURP,
       switch: COMMAND_SWITCH,
+
+      // FFA only.
+      invite: COMMAND_INVITE,
+      join: COMMAND_JOIN,
     });
 
     this.listeners = {

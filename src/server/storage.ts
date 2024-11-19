@@ -293,6 +293,11 @@ export class GameStorage {
   };
 
   /**
+   * FFA team invites sent by player
+   */
+  public teamInvites: Map<PlayerId, Set<PlayerId>> = new Map();
+
+  /**
    * Public key from login server
    */
   public loginPublicKey: KeyObject = null;

@@ -146,6 +146,7 @@ export default class GamePlayersDisconnect extends System {
       this.storage.mobIdList.delete(playerId);
       this.storage.backupTokenList.delete(player.backuptoken.current);
       this.storage.botIdList.delete(playerId);
+      this.storage.teamInvites.delete(playerId);
 
       if (has(player, 'user')) {
         this.storage.users.online.delete(player.user.id);
