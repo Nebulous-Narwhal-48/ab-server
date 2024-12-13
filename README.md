@@ -1,3 +1,27 @@
+>*Notes about this fork
+>
+>Reference client: 
+>- https://github.com/Nebulous-Narwhal-48/airmash-frontend  
+>
+>New features:
+>- FFA teams
+>- FFA flag
+>- New game mode: TDM
+>- Custom skins
+>- Node.js >= 18
+>
+>New env variables:
+>- FFA_ENABLE_TEAMS
+>- FFA_ENABLE_FLAG
+>- SERVER_TYPE=TDM
+>- SKINS_ENABLE
+>
+>New commands:
+>- /invite *playerName*, /join *playerName*
+>- /skin add *url*, /skin remove *url*, /skin transfer *url* *playerName*
+>
+>Reddit post: https://www.reddit.com/r/airmash/comments/1gwbxdn/updates/
+
 # ab-server
 
 Game server.
