@@ -8,7 +8,7 @@ import {
   PLAYERS_UPGRADES_RESET,
   PLAYERS_UPGRADES_TOGGLE_FEVER,
   RESPONSE_PLAYER_UPGRADE,
-  TIMELINE_BEFORE_GAME_START,
+  TIMELINE_BEFORE_LOOP_START,
   TIMELINE_CLOCK_SECOND,
 } from '../../../events';
 import { CHANNEL_CHAT } from '../../../events/channels';
@@ -28,7 +28,7 @@ export default class GameUpgrades extends System {
       [PLAYERS_UPGRADES_RESET]: this.onPlayersUpgradesReset,
       [PLAYERS_UPGRADES_AUTO_FEVER]: this.autoUpgradesFever,
       [PLAYERS_UPGRADES_TOGGLE_FEVER]: this.toggleUpgradesFever,
-      [TIMELINE_BEFORE_GAME_START]: this.initFeverConfig,
+      [TIMELINE_BEFORE_LOOP_START]: this.initFeverConfig,
       [TIMELINE_CLOCK_SECOND]: this.onSecond,
     };
   }

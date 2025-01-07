@@ -1,6 +1,7 @@
 import { MS_PER_SEC } from '../../constants';
 import {
   POWERUPS_ADD_PERIODIC,
+  POWERUPS_CLEAR_PERIODICS,
   POWERUPS_DESPAWNED,
   POWERUPS_SPAWN,
   TIMELINE_CLOCK_SECOND,
@@ -24,6 +25,7 @@ export default class PowerupsPeriodic extends System {
       [POWERUPS_DESPAWNED]: this.onPowerupDespawned,
       [TIMELINE_CLOCK_SECOND]: this.checkSpawn,
       [TIMELINE_GAME_MATCH_START]: this.spawnPowerups,
+      [POWERUPS_CLEAR_PERIODICS]: this.clearPowerups,
     };
   }
 
@@ -89,7 +91,7 @@ export default class PowerupsPeriodic extends System {
 
     powerup.interval *= MS_PER_SEC;
 
-    this.storage.powerupSpawns.forEach(spawn => {
+    this.storage.powerupSpawns[this.config.server.typeId].forEach(spawn => {
       if (
         powerup.posX >= spawn.x &&
         powerup.posX <= spawn.x + spawn.width &&
@@ -111,5 +113,10 @@ export default class PowerupsPeriodic extends System {
 
     this.emit(POWERUPS_SPAWN, powerup);
     this.spawnedPowerups.set(powerup.mobId, powerup);
+  }
+
+  private clearPowerups() {
+    this.powerups = [];
+    this.spawnedPowerups = new Map();
   }
 }

@@ -2,7 +2,7 @@ import { existsSync, readFileSync, renameSync } from 'fs';
 import { Worker } from 'worker_threads';
 import { USER_STATS_SAVE_INTERVAL_SEC } from '../../../constants';
 import {
-  TIMELINE_BEFORE_GAME_START,
+  TIMELINE_BEFORE_LOOP_START,
   TIMELINE_CLOCK_SECOND,
   USERS_WORKER_SAVE_STATS,
   USERS_WORKER_SAVE_STATS_RESPONSE,
@@ -21,7 +21,7 @@ export default class UserStatsPeriodic extends System {
     super({ app });
 
     this.listeners = {
-      [TIMELINE_BEFORE_GAME_START]: this.onBeforeGameStart,
+      [TIMELINE_BEFORE_LOOP_START]: this.onBeforeGameStart,
       [TIMELINE_CLOCK_SECOND]: this.onSecondTick,
       [USERS_WORKER_SAVE_STATS_RESPONSE]: this.updateSavingStatus,
     };

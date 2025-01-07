@@ -1,7 +1,7 @@
 import { createPublicKey, KeyObject } from 'crypto';
 import https from 'https';
 import { AUTH_LOGIN_SERVER_DOWNLOAD_RETRY_INTERVAL_MS } from '../../constants';
-import { TIMELINE_BEFORE_GAME_START } from '../../events';
+import { TIMELINE_BEFORE_LOOP_START } from '../../events';
 import { System } from '../system';
 
 export default class LoginPublicKeyDownloader extends System {
@@ -9,7 +9,7 @@ export default class LoginPublicKeyDownloader extends System {
     super({ app });
 
     this.listeners = {
-      [TIMELINE_BEFORE_GAME_START]: this.downloadLoginServerPublicKey,
+      [TIMELINE_BEFORE_LOOP_START]: this.downloadLoginServerPublicKey,
     };
   }
 

@@ -41,7 +41,7 @@ import {
   RESPONSE_SERVER_PLAYER_CONNECT,
   SYNC_ENQUEUE_UPDATE,
   SYNC_SUBSCRIBE,
-  TIMELINE_BEFORE_GAME_START,
+  TIMELINE_BEFORE_LOOP_START,
   TIMEOUT_ACK,
   TIMEOUT_BACKUP,
   VIEWPORTS_CREATE,
@@ -107,7 +107,7 @@ export default class GamePlayersConnect extends System {
 
       // Events.
       [PLAYERS_CREATE]: this.onCreatePlayer,
-      [TIMELINE_BEFORE_GAME_START]: this.createServerPlayer,
+      [TIMELINE_BEFORE_LOOP_START]: this.createServerPlayer,
     };
   }
 

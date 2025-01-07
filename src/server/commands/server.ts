@@ -1,3 +1,4 @@
+import { GAME_TYPES, SERVER_CUSTOM_TYPES, SERVER_PACKETS, ServerPackets } from '@airbattle/protocol';
 import { GameServerConfigInterface } from '../../config';
 import {
   BYTES_PER_KB,
@@ -14,18 +15,21 @@ import {
 import {
   BROADCAST_CHAT_SERVER_PUBLIC,
   BROADCAST_CHAT_SERVER_WHISPER,
+  BROADCAST_PLAYER_UPDATE,
   CHAT_MUTE_BY_IP,
   CHAT_UNMUTE_BY_IP,
   COMMAND_SERVER,
   CONNECTIONS_BAN_IP,
   CONNECTIONS_FLUSH_BANS,
   CONNECTIONS_KICK,
+  CONNECTIONS_SEND_PACKETS,
   CONNECTIONS_UNBAN_IP,
   PLAYERS_KICK,
   PLAYERS_UPGRADES_AUTO_FEVER,
   PLAYERS_UPGRADES_TOGGLE_FEVER,
   POWERUPS_UPDATE_CONFIG,
   RESPONSE_COMMAND_REPLY,
+  TIMELINE_GAME_MODE_START,
 } from '../../events';
 import { Metrics } from '../../logger/metrics';
 import { msToHumanReadable } from '../../support/datetime';
@@ -365,7 +369,7 @@ export default class ServerCommandHandler extends System {
     const spawnZones = (() => {
       let total = 0;
 
-      this.storage.spawnZoneSet.forEach(zonesByPlaneType => {
+      this.storage.spawnZoneSet[this.config.server.typeId].forEach(zonesByPlaneType => {
         zonesByPlaneType.forEach(zones => {
           total += zones.size;
         });
@@ -375,7 +379,7 @@ export default class ServerCommandHandler extends System {
         return 'No precached spawn zones.';
       }
 
-      return `Precached spawn zones: ${total}, sets: ${this.storage.spawnZoneSet.size}.`;
+      return `Precached spawn zones: ${total}, sets: ${this.storage.spawnZoneSet[this.config.server.typeId].size}.`;
     })();
 
     this.emit(
@@ -1136,6 +1140,28 @@ export default class ServerCommandHandler extends System {
 
       if (command.indexOf('welcome') === 0) {
         this.handleWelcomeCommand(playerId, command);
+      }
+
+      if (command.startsWith('mode')) {
+        const [,mode] = command.split(' ');
+        if (!GAME_TYPES[mode.toUpperCase()])
+            return;
+        this.config.server.typeId = GAME_TYPES[mode.toUpperCase()];
+        this.app.replaceGameMode();
+      }
+
+      if (command.startsWith('test')) {
+        const [,a,b,c] = command.split(' ');
+
+        if (a === 'mountains_off') {
+          this.emit('TEST_UNLOAD_MOUNTAINS');
+        } else if (a === 'mountains_on') {
+          this.emit('TEST_LOAD_MOUNTAINS');
+        } else if (a === 'teleport') {
+          player.position.x = parseFloat(b);
+          player.position.y = parseFloat(c);
+          this.emit(BROADCAST_PLAYER_UPDATE, player.id.current);
+        }
       }
     }
   }

@@ -24,11 +24,12 @@ import {
   PLAYERS_BEFORE_REMOVE,
   PLAYERS_CREATED,
   RESPONSE_SCORE_UPDATE,
-  TIMELINE_BEFORE_GAME_START,
+  TIMELINE_GAME_MODE_START,
   TIMELINE_CLOCK_MINUTE,
   TIMELINE_CLOCK_10_SECONDS,
   TIMELINE_CLOCK_5_SECONDS,
   TIMELINE_CLOCK_SECOND,
+  COLLISIONS_REMOVE_OBJECT,
 } from '../../../events';
 import FlagState from '../../../server/components/flag-state';
 import HitCircles from '../../../server/components/hit-circles';
@@ -44,6 +45,8 @@ import { Flag, MobId, Player, PlayerId } from '../../../types';
 import { escapeHTML } from '../../../support/strings';
 
 export default class GameFlag extends System {
+  private flag: Flag
+
   constructor({ app }) {
     super({ app });
 
@@ -52,15 +55,54 @@ export default class GameFlag extends System {
       [CTF_PLAYER_DROP_FLAG]: this.onPlayerDropFlag,
       [CTF_PLAYER_TOUCHED_FLAG]: this.onPlayerTouchedFlag,
       [PLAYERS_BEFORE_REMOVE]: this.onPlayerDelete,
-      [TIMELINE_BEFORE_GAME_START]: this.initFlagElements,
+      [TIMELINE_GAME_MODE_START]: this.onGameModeStart,
       [TIMELINE_CLOCK_MINUTE]: this.checkFlagsState,
       [PLAYERS_CREATED]: this.onPlayersCreated,
       [TIMELINE_CLOCK_10_SECONDS]: this.updateScore,
     };
   }
 
+  override onStop() {
+    // remove collisions
+    this.emit(COLLISIONS_REMOVE_OBJECT, this.flag.hitbox.current);  
+
+    // drop flag/reset player state
+    if (this.flag.owner.current !== 0) {
+      this.onPlayerLostFlag(this.flag.owner.current, true);
+    }
+  }
+
+  onGameModeStart() {
+    if (!this.storage.ffaFlagRedId) {
+      this.initFlagElements();
+    } else {
+      const flag = this.flag = this.storage.mobList.get(this.storage.ffaFlagRedId) as Flag;
+      const [x, y] = [0, 0];
+
+      flag.position.x = x;
+      flag.position.y = y;
+      flag.owner.previous = 0;
+      flag.owner.current = 0;
+      flag.owner.lastDrop = Date.now();
+      flag.flagstate.returned = true;
+      flag.flagstate.captured = false;
+      flag.flagstate.dropped = false;
+      flag.hitbox.x = x + MAP_SIZE.HALF_WIDTH + this.storage.flagHitboxesCache.x;
+      flag.hitbox.y = y + MAP_SIZE.HALF_HEIGHT + this.storage.flagHitboxesCache.y;
+      flag.hitbox.height = this.storage.flagHitboxesCache.height;
+      flag.hitbox.width = this.storage.flagHitboxesCache.width;
+      flag.hitbox.current.x = flag.hitbox.x - this.storage.flagHitboxesCache.x;
+      flag.hitbox.current.y = flag.hitbox.y - this.storage.flagHitboxesCache.y;
+
+      // broadcast flag
+      this.onPlayersCreated(null)
+    }
+
+    this.emit(COLLISIONS_ADD_OBJECT, this.flag.hitbox.current);
+  }
+
   initFlagElements(): void {
-    this.storage.ctfFlagRedId = this.helpers.createServiceMobId();
+    this.storage.ffaFlagRedId = this.helpers.createServiceMobId();
         
     //const [x, y] = CTF_FLAGS_POSITIONS[CTF_TEAMS.RED];
     const [x, y] = [0, 0];
@@ -69,7 +111,7 @@ export default class GameFlag extends System {
       new FlagState(),
       new Hitbox(),
       new HitCircles([...CTF_FLAG_COLLISIONS]),
-      new Id(this.storage.ctfFlagRedId),
+      new Id(this.storage.ffaFlagRedId),
       new Owner(),
       new Position(x, y),
       new Rotation(),
@@ -92,15 +134,16 @@ export default class GameFlag extends System {
     hitbox.isCollideWithPlayer = true;
     redFlag.hitbox.current = hitbox;
 
-    this.emit(COLLISIONS_ADD_OBJECT, redFlag.hitbox.current);
-    this.storage.mobList.set(this.storage.ctfFlagRedId, redFlag);
+    //this.emit(COLLISIONS_ADD_OBJECT, redFlag.hitbox.current);
+    this.storage.mobList.set(this.storage.ffaFlagRedId, redFlag);
+    this.flag = redFlag;
 
     this.log.debug('Red flag added.');
   }
 
   onPlayersCreated(playerId: PlayerId) {
     setTimeout(() => {
-      const flag = this.storage.mobList.get(this.storage.ctfFlagRedId) as Flag;
+      const flag = this.flag;
       this.emit(
         CONNECTIONS_SEND_PACKETS,
         {
@@ -121,7 +164,6 @@ export default class GameFlag extends System {
   }
 
   onPlayerTouchedFlag(playerId: PlayerId, flagId: MobId): void {
-    //console.log(this)
     const flag = this.storage.mobList.get(flagId) as Flag;
     const player = this.storage.playerList.get(playerId);
 
@@ -191,7 +233,7 @@ export default class GameFlag extends System {
       return;
     }
 
-    const flag = this.storage.mobList.get(this.storage.ctfFlagRedId) as Flag;
+    const flag = this.flag;
 
     flag.owner.previous = player.id.current;
     flag.owner.current = 0;
@@ -240,7 +282,7 @@ export default class GameFlag extends System {
    */
   onPlayerLostFlag(playerId: PlayerId, isDropped = false): void {
     const player = this.storage.playerList.get(playerId);
-    const flag = this.storage.mobList.get(this.storage.ctfFlagRedId) as Flag;
+    const flag = this.flag;
 
     if (this.helpers.isPlayerConnected(playerId)) {
       if (!player.planestate.flagspeed) {
@@ -287,7 +329,7 @@ export default class GameFlag extends System {
    * Check for invalid flags state.
    */
   checkFlagsState(): void {
-    const redFlag = this.storage.mobList.get(this.storage.ctfFlagRedId) as Flag;
+    const redFlag = this.flag;
         
     if (redFlag.owner.current !== 0 && !this.helpers.isPlayerConnected(redFlag.owner.current)) {
       redFlag.owner.current = 0;
@@ -315,7 +357,7 @@ export default class GameFlag extends System {
    * 
    */
   updateScore(): void {
-    const redFlag = this.storage.mobList.get(this.storage.ctfFlagRedId) as Flag;
+    const redFlag = this.flag;
     if (redFlag.owner.current) {
       const player = this.storage.playerList.get(redFlag.owner.current);
       player.score.current += 200;

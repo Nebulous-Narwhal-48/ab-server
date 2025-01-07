@@ -4,6 +4,7 @@
 >- https://github.com/Nebulous-Narwhal-48/airmash-frontend  
 >
 >New features:
+>- Change game mode without restarting the server
 >- FFA teams
 >- FFA flag
 >- New game mode: TDM
@@ -17,6 +18,7 @@
 >- SKINS_ENABLE
 >
 >New commands:
+>- /server mode *mode*
 >- /invite *playerName*, /join *playerName*
 >- /skin add *url*, /skin remove *url*, /skin transfer *url* *playerName*
 >

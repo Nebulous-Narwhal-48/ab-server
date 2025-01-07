@@ -1,5 +1,5 @@
 import { encodeUpgrades, ServerPackets, SERVER_PACKETS, GAME_TYPES } from '@airbattle/protocol';
-import { CONNECTIONS_SEND_PACKETS, RESPONSE_LOGIN, TIMELINE_BEFORE_GAME_START } from '../../events';
+import { CONNECTIONS_SEND_PACKETS, RESPONSE_LOGIN, TIMELINE_BEFORE_LOOP_START } from '../../events';
 import { LoginServerConfig, MainConnectionId, Player } from '../../types';
 import { System } from '../system';
 
@@ -14,7 +14,7 @@ export default class LoginResponse extends System {
 
     this.listeners = {
       [RESPONSE_LOGIN]: this.onLoginResponse,
-      [TIMELINE_BEFORE_GAME_START]: this.prepareServerConfiguration,
+      [TIMELINE_BEFORE_LOOP_START]: this.prepareServerConfiguration,
     };
   }
 

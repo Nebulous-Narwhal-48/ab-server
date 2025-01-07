@@ -1,5 +1,5 @@
 import { KeyObject } from 'crypto';
-import { SERVER_MIN_MOB_ID, SERVER_MIN_SERVICE_MOB_ID } from '../constants';
+import { SERVER_MIN_MOB_ID, SERVER_MIN_MOUNTAIN_MOB_ID, SERVER_MIN_SERVICE_MOB_ID } from '../constants';
 import {
   BackupConnectionId,
   BroadcastStorage,
@@ -31,6 +31,7 @@ import {
   UsersStorage,
   Viewports,
 } from '../types';
+import { GAME_TYPES } from '@airbattle/protocol';
 
 export class GameStorage {
   /**
@@ -79,6 +80,7 @@ export class GameStorage {
    * Use `createServiceMobId` helper to generate ID.
    */
   public nextServiceMobId = SERVER_MIN_SERVICE_MOB_ID;
+  public nextMountainMobId = SERVER_MIN_MOUNTAIN_MOB_ID;
 
   /**
    * All meta connections (main and backup).
@@ -243,15 +245,20 @@ export class GameStorage {
    *
    * Index is needed for BTR, which has separate spawn zone boundaries for in match and waiting for match to start.
    */
-  public spawnZoneSet: Map<number, Map<number, SpawnZones>> = new Map<
-    number,
-    Map<number, SpawnZones>
-  >();
+  public spawnZoneSet:{ [key in GAME_TYPES]: Map<number, Map<number, SpawnZones>> } = {
+    [GAME_TYPES.FFA]: new Map<number, Map<number, SpawnZones>>(),
+    [GAME_TYPES.CTF]: new Map<number, Map<number, SpawnZones>>(),
+    [GAME_TYPES.BTR]: new Map<number, Map<number, SpawnZones>>(),
+  }
 
   /**
    * Pre-generated powerups spawn-zones.
    */
-  public powerupSpawns: Map<number, PowerupSpawnChunk> = new Map();
+  public powerupSpawns:{ [key in GAME_TYPES]: Map<number, PowerupSpawnChunk> } = {
+    [GAME_TYPES.FFA]: new Map(),
+    [GAME_TYPES.CTF]: new Map(),
+    [GAME_TYPES.BTR]: new Map(),
+  }
 
   public serverPlayerId: number = null;
 
@@ -275,6 +282,9 @@ export class GameStorage {
 
   public ctfFlagRedId: number = null;
 
+  public blueDropZone: FlagZone;
+  public redDropZone: FlagZone;
+
   public ctf: CTFStorage = {
     flags: {
       blueId: null,
@@ -291,6 +301,8 @@ export class GameStorage {
       isRedElections: false,
     },
   };
+
+  public ffaFlagRedId: number = null;
 
   /**
    * FFA team invites sent by player

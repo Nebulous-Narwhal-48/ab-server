@@ -8,7 +8,7 @@ import {
   PLAYERS_ASSIGN_SPAWN_POSITION,
   PLAYERS_ASSIGN_TEAM,
   PLAYERS_UPDATE_TEAM,
-  TIMELINE_BEFORE_GAME_START,
+  TIMELINE_GAME_MODE_START,
 } from '../../../events';
 import { System } from '../../../server/system';
 import { getRandomInt } from '../../../support/numbers';
@@ -24,7 +24,7 @@ export default class GamePlayers extends System {
     super({ app });
 
     this.listeners = {
-      [TIMELINE_BEFORE_GAME_START]: this.initTeams,
+      [TIMELINE_GAME_MODE_START]: this.initTeams,
       [PLAYERS_ASSIGN_TEAM]: this.onAssignPlayerTeam,
       [PLAYERS_ASSIGN_SPAWN_POSITION]: this.onAssignPlayerSpawnPosition,
       [CTF_SHUFFLE_PLAYERS]: this.onShufflePlayers,
@@ -32,8 +32,18 @@ export default class GamePlayers extends System {
   }
 
   initTeams(): void {
-    this.storage.connectionIdByTeam.set(CTF_TEAMS.BLUE, new Set());
-    this.storage.connectionIdByTeam.set(CTF_TEAMS.RED, new Set());
+      const num_players = this.storage.playerList.size;
+      const broadcastReteamPlayerIdList: PlayerId[] = new Array(num_players);
+      let playersIterator = this.storage.playerList.values();
+      let player: Player = playersIterator.next().value;
+      let i = 0;
+      while (player !== undefined) {
+        this.emit(PLAYERS_UPDATE_TEAM, player.id.current, i < num_players/2 ? CTF_TEAMS.BLUE : CTF_TEAMS.RED);
+        broadcastReteamPlayerIdList[i] = player.id.current;
+        player = playersIterator.next().value;
+        i++;
+      }
+      this.emit(BROADCAST_PLAYER_RETEAM, broadcastReteamPlayerIdList);
   }
 
   onAssignPlayerTeam(player: Player): void {

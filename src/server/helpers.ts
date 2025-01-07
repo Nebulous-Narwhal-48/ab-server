@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import { ClockTime } from '@airbattle/protocol';
-import { NS_PER_SEC, SERVER_MAX_MOB_ID, SERVER_MIN_MOB_ID } from '../constants';
+import { NS_PER_SEC, SERVER_MAX_MOB_ID, SERVER_MIN_MOB_ID, SERVER_MIN_MOUNTAIN_MOB_ID } from '../constants';
 import Logger from '../logger';
 import { AuthToken, AuthTokenData, MobId, PlayerId } from '../types';
 import { GameStorage } from './storage';
@@ -79,11 +79,27 @@ class Helpers {
 
     this.storage.nextServiceMobId += 1;
 
-    if (this.storage.nextServiceMobId >= SERVER_MIN_MOB_ID) {
+    if (this.storage.nextServiceMobId >= SERVER_MIN_MOUNTAIN_MOB_ID) {
       this.log.error('Service mob ID is out of range!');
     }
 
     return id;
+  }
+
+  createMountainMobId(): MobId {
+    const id = this.storage.nextMountainMobId;
+
+    this.storage.nextMountainMobId += 1;
+
+    if (this.storage.nextMountainMobId >= SERVER_MIN_MOB_ID) {
+      this.log.error('Mountain mob ID is out of range!');
+    }
+
+    return id;
+  }
+
+  resetMountainMobIds() {
+    this.storage.nextMountainMobId = SERVER_MIN_MOUNTAIN_MOB_ID;
   }
 
   createMobId(playerName = ''): MobId {

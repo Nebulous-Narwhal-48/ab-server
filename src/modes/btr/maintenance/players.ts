@@ -2,6 +2,7 @@ import { SERVER_MESSAGE_TYPES } from '@airbattle/protocol';
 import { MS_PER_SEC, PLAYERS_ALIVE_STATUSES, SHIPS_ENCLOSE_RADIUS } from '../../../constants';
 import {
   BROADCAST_GAME_FIREWALL,
+  BROADCAST_PLAYER_RETEAM,
   BROADCAST_PLAYERS_ALIVE,
   BROADCAST_SERVER_MESSAGE,
   PLAYERS_ALIVE_UPDATE,
@@ -9,8 +10,10 @@ import {
   PLAYERS_ASSIGN_SPAWN_POSITION,
   PLAYERS_CREATED,
   PLAYERS_REMOVED,
+  PLAYERS_UPDATE_TEAM,
   RESPONSE_SERVER_MESSAGE,
   SPECTATE_ENTER_MODE,
+  TIMELINE_GAME_MODE_START,
 } from '../../../events';
 import { CHANNEL_SPECTATE } from '../../../events/channels';
 import { System } from '../../../server/system';
@@ -26,7 +29,23 @@ export default class GamePlayers extends System {
       [PLAYERS_ASSIGN_SPAWN_POSITION]: this.onAssignPlayerSpawnPosition,
       [PLAYERS_CREATED]: this.onCreatePlayer,
       [PLAYERS_REMOVED]: this.onRemovePlayer,
+      [TIMELINE_GAME_MODE_START]: this.initTeams,
     };
+  }
+
+  initTeams(): void {
+    const num_players = this.storage.playerList.size;
+    const broadcastReteamPlayerIdList: PlayerId[] = new Array(num_players);
+    let playersIterator = this.storage.playerList.values();
+    let player: Player = playersIterator.next().value;
+    let i = 0;
+    while (player !== undefined) {
+      this.emit(PLAYERS_UPDATE_TEAM, player.id.current, player.id.current);
+      broadcastReteamPlayerIdList[i] = player.id.current;
+      player = playersIterator.next().value;
+      i++;
+    }
+    this.emit(BROADCAST_PLAYER_RETEAM, broadcastReteamPlayerIdList);
   }
 
   onAssignPlayerAliveStatus(player: Player): void {
@@ -48,7 +67,7 @@ export default class GamePlayers extends System {
      * at index 1 is the active game mode zone.
      */
     const zoneSetIndex = this.storage.gameEntity.match.isActive ? 1 : 0;
-    const spawnZones = this.storage.spawnZoneSet.get(zoneSetIndex).get(player.planetype.current);
+    const spawnZones = this.storage.spawnZoneSet[this.config.server.typeId].get(zoneSetIndex).get(player.planetype.current);
 
     [x, y] = spawnZones.get(getRandomInt(0, spawnZones.size - 1));
     r = SHIPS_ENCLOSE_RADIUS[player.planetype.current] / 2;

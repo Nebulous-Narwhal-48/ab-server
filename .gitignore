@@ -104,3 +104,4 @@ certs/**/*.pem
 cache/**/*
 data/user-stats.json*
 data/sync-state.json*
+data/skins.json*

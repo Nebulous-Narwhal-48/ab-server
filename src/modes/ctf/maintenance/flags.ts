@@ -17,6 +17,7 @@ import {
   BROADCAST_GAME_FLAG,
   BROADCAST_PLAYER_UPDATE,
   COLLISIONS_ADD_OBJECT,
+  COLLISIONS_REMOVE_OBJECT,
   CTF_CARRIER_KILLED,
   CTF_PLAYER_CROSSED_FLAGZONE,
   CTF_PLAYER_DROP_FLAG,
@@ -26,7 +27,7 @@ import {
   PLAYERS_BEFORE_REMOVE,
   RESPONSE_SCORE_UPDATE,
   SYNC_ENQUEUE_UPDATE,
-  TIMELINE_BEFORE_GAME_START,
+  TIMELINE_GAME_MODE_START,
   TIMELINE_CLOCK_MINUTE,
 } from '../../../events';
 import FlagState from '../../../server/components/flag-state';
@@ -53,9 +54,61 @@ export default class GameFlags extends System {
       [CTF_PLAYER_TOUCHED_FLAG]: this.onPlayerTouchedFlag,
       [CTF_RESET_FLAGS]: this.onResetFlags,
       [PLAYERS_BEFORE_REMOVE]: this.onPlayerDelete,
-      [TIMELINE_BEFORE_GAME_START]: this.initFlagElements,
+      [TIMELINE_GAME_MODE_START]: this.onGameModeStart,
       [TIMELINE_CLOCK_MINUTE]: this.checkFlagsState,
     };
+  }
+
+  override onStop() {
+    const blueFlag = this.storage.mobList.get(this.storage.ctfFlagBlueId) as Flag;
+    const redFlag = this.storage.mobList.get(this.storage.ctfFlagRedId) as Flag;
+
+    // remove collisions
+    this.emit(COLLISIONS_REMOVE_OBJECT, blueFlag.hitbox.current);
+    this.emit(COLLISIONS_REMOVE_OBJECT, redFlag.hitbox.current);
+    this.emit(COLLISIONS_REMOVE_OBJECT, this.storage.blueDropZone.hitbox.current);
+    this.emit(COLLISIONS_REMOVE_OBJECT, this.storage.redDropZone.hitbox.current);
+
+    // drop flag/reset player state
+    if (blueFlag.owner.current !== 0) {
+      this.onPlayerLostFlag(blueFlag.owner.current, true);
+    }
+    if (redFlag.owner.current !== 0) {
+      this.onPlayerLostFlag(redFlag.owner.current, true);
+    }
+  }
+
+  onGameModeStart() {
+    let blueFlag = this.storage.mobList.get(this.storage.ctfFlagBlueId) as Flag;
+    let redFlag = this.storage.mobList.get(this.storage.ctfFlagRedId) as Flag;
+    if (!this.storage.ctfFlagBlueId) {
+      this.initFlagElements();
+      blueFlag = this.storage.mobList.get(this.storage.ctfFlagBlueId) as Flag;
+      redFlag = this.storage.mobList.get(this.storage.ctfFlagRedId) as Flag;      
+    } else {
+      for (const flag of [blueFlag, redFlag]) {
+        const [x, y] = CTF_FLAGS_POSITIONS[flag.team.current];
+        flag.position.x = x;
+        flag.position.y = y;
+        flag.owner.previous = 0;
+        flag.owner.current = 0;
+        flag.owner.lastDrop = Date.now();
+        flag.flagstate.returned = true;
+        flag.flagstate.captured = false;
+        flag.flagstate.dropped = false;
+        flag.hitbox.x = x + MAP_SIZE.HALF_WIDTH + this.storage.flagHitboxesCache.x;
+        flag.hitbox.y = y + MAP_SIZE.HALF_HEIGHT + this.storage.flagHitboxesCache.y;
+        flag.hitbox.height = this.storage.flagHitboxesCache.height;
+        flag.hitbox.width = this.storage.flagHitboxesCache.width;
+        flag.hitbox.current.x = flag.hitbox.x - this.storage.flagHitboxesCache.x;
+        flag.hitbox.current.y = flag.hitbox.y - this.storage.flagHitboxesCache.y;
+      }
+    }
+
+    this.emit(COLLISIONS_ADD_OBJECT, blueFlag.hitbox.current);
+    this.emit(COLLISIONS_ADD_OBJECT, redFlag.hitbox.current);
+    this.emit(COLLISIONS_ADD_OBJECT, this.storage.blueDropZone.hitbox.current);
+    this.emit(COLLISIONS_ADD_OBJECT, this.storage.redDropZone.hitbox.current);
   }
 
   initFlagElements(): void {
@@ -88,8 +141,9 @@ export default class GameFlags extends System {
       blueDropZone.hitbox.current.type = COLLISIONS_OBJECT_TYPES.FLAGZONE;
       blueDropZone.hitbox.current.isCollideWithPlayer = true;
 
-      this.emit(COLLISIONS_ADD_OBJECT, blueDropZone.hitbox.current);
+      //this.emit(COLLISIONS_ADD_OBJECT, blueDropZone.hitbox.current);
       this.storage.mobList.set(blueDropZone.id.current, blueDropZone);
+      this.storage.blueDropZone = blueDropZone;
 
       this.log.debug('Blue drop zone added.');
     }
@@ -129,7 +183,7 @@ export default class GameFlags extends System {
       hitbox.isCollideWithPlayer = true;
       blueFlag.hitbox.current = hitbox;
 
-      this.emit(COLLISIONS_ADD_OBJECT, blueFlag.hitbox.current);
+      //this.emit(COLLISIONS_ADD_OBJECT, blueFlag.hitbox.current);
       this.storage.mobList.set(this.storage.ctfFlagBlueId, blueFlag);
 
       this.log.debug('Blue flag added.');
@@ -164,8 +218,9 @@ export default class GameFlags extends System {
       redDropZone.hitbox.current.type = COLLISIONS_OBJECT_TYPES.FLAGZONE;
       redDropZone.hitbox.current.isCollideWithPlayer = true;
 
-      this.emit(COLLISIONS_ADD_OBJECT, redDropZone.hitbox.current);
+      //this.emit(COLLISIONS_ADD_OBJECT, redDropZone.hitbox.current);
       this.storage.mobList.set(redDropZone.id.current, redDropZone);
+      this.storage.redDropZone = redDropZone;
 
       this.log.debug('Red drop zone added.');
     }
@@ -205,7 +260,7 @@ export default class GameFlags extends System {
       hitbox.isCollideWithPlayer = true;
       redFlag.hitbox.current = hitbox;
 
-      this.emit(COLLISIONS_ADD_OBJECT, redFlag.hitbox.current);
+      //this.emit(COLLISIONS_ADD_OBJECT, redFlag.hitbox.current);
       this.storage.mobList.set(this.storage.ctfFlagRedId, redFlag);
 
       this.log.debug('Red flag added.');

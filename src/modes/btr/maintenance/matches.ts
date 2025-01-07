@@ -24,6 +24,7 @@ import {
   TIMELINE_CLOCK_SECOND,
   TIMELINE_GAME_MATCH_END,
   TIMELINE_GAME_MATCH_START,
+  TIMELINE_GAME_MODE_START,
 } from '../../../events';
 import { SCOREBOARD_FORCE_UPDATE } from '../../../events/scoreboard';
 import Entity from '../../../server/entity';
@@ -48,7 +49,12 @@ export default class GameMatches extends System {
       [PLAYERS_ALIVE_UPDATE]: this.updatePlayersAlive,
       [TIMELINE_CLOCK_HALFSECOND]: this.updateFirewallRadius,
       [TIMELINE_CLOCK_SECOND]: this.onSecondTick,
+      [TIMELINE_GAME_MODE_START]: this.onGameModeStart,
     };
+  }
+
+  onGameModeStart(): void {
+    this.matchStartTimeout = this.storage.playerList.size > 1 ? 55 : 0;
   }
 
   updateFirewallRadius(): void {

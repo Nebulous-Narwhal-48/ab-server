@@ -1,9 +1,9 @@
 import { CTF_TEAMS, GAME_TYPES } from '@airbattle/protocol';
 import { FFA_VALID_SPAWN_ZONES, SHIPS_ENCLOSE_RADIUS } from '../../../constants';
-import { PLAYERS_ASSIGN_SPAWN_POSITION, PLAYERS_ASSIGN_TEAM, TIMELINE_BEFORE_GAME_START } from '../../../events';
+import { BROADCAST_PLAYER_RETEAM, PLAYERS_ASSIGN_SPAWN_POSITION, PLAYERS_ASSIGN_TEAM, PLAYERS_UPDATE_TEAM, TIMELINE_GAME_MODE_START } from '../../../events';
 import { System } from '../../../server/system';
 import { getRandomInt } from '../../../support/numbers';
-import { Player } from '../../../types';
+import { Player, PlayerId } from '../../../types';
 
 export default class GamePlayers extends System {
   constructor({ app }) {
@@ -11,7 +11,7 @@ export default class GamePlayers extends System {
 
     this.listeners = {
       [PLAYERS_ASSIGN_SPAWN_POSITION]: this.onAssignPlayerSpawnPosition,
-      [TIMELINE_BEFORE_GAME_START]: this.initTeams,
+      [TIMELINE_GAME_MODE_START]: this.initTeams,
       [PLAYERS_ASSIGN_TEAM]: this.onAssignPlayerTeam,
     };
   }
@@ -26,7 +26,7 @@ export default class GamePlayers extends System {
      * A zone can be input by the administrator via the environment, or changed at runtime via a server command.
      */
     const zoneIndex = FFA_VALID_SPAWN_ZONES[this.config.ffa.spawnZoneName];
-    const spawnZones = this.storage.spawnZoneSet.get(zoneIndex).get(player.planetype.current);
+    const spawnZones = this.storage.spawnZoneSet[this.config.server.typeId].get(zoneIndex).get(player.planetype.current);
 
     [x, y] = spawnZones.get(getRandomInt(0, spawnZones.size - 1));
     r = SHIPS_ENCLOSE_RADIUS[player.planetype.current] / 2;
@@ -36,10 +36,38 @@ export default class GamePlayers extends System {
   }
 
   initTeams(): void {
-    if (!(this.config.server.typeId == GAME_TYPES.FFA && this.config.ffa.tdmMode))
-      return; 
-    this.storage.connectionIdByTeam.set(CTF_TEAMS.BLUE, new Set());
-    this.storage.connectionIdByTeam.set(CTF_TEAMS.RED, new Set());
+    if (!(this.config.server.typeId == GAME_TYPES.FFA && this.config.ffa.tdmMode)) {
+      // vanilla ffa
+
+      const num_players = this.storage.playerList.size;
+      const broadcastReteamPlayerIdList: PlayerId[] = new Array(num_players);
+      let playersIterator = this.storage.playerList.values();
+      let player: Player = playersIterator.next().value;
+      let i = 0;
+      while (player !== undefined) {
+        this.emit(PLAYERS_UPDATE_TEAM, player.id.current, player.id.current);
+        broadcastReteamPlayerIdList[i] = player.id.current;
+        player = playersIterator.next().value;
+        i++;
+      }
+      this.emit(BROADCAST_PLAYER_RETEAM, broadcastReteamPlayerIdList);
+
+    } else {
+      // tdm variant
+
+      const num_players = this.storage.playerList.size;
+      const broadcastReteamPlayerIdList: PlayerId[] = new Array(num_players);
+      let playersIterator = this.storage.playerList.values();
+      let player: Player = playersIterator.next().value;
+      let i = 0;
+      while (player !== undefined) {
+        this.emit(PLAYERS_UPDATE_TEAM, player.id.current, i < num_players/2 ? CTF_TEAMS.BLUE : CTF_TEAMS.RED);
+        broadcastReteamPlayerIdList[i] = player.id.current;
+        player = playersIterator.next().value;
+        i++;
+      }
+      this.emit(BROADCAST_PLAYER_RETEAM, broadcastReteamPlayerIdList);
+    }
   }
 
   onAssignPlayerTeam(player: Player): void {

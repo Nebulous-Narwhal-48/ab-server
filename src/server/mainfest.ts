@@ -303,6 +303,9 @@ export default abstract class GameManifest {
     this.systemsToLoad = [];
   }
 
+  stopSystems(): void {
+  }
+
   protected set systems(systems: typeof System | typeof System[]) {
     if (Array.isArray(systems)) {
       systems.forEach(s => {

@@ -12,7 +12,7 @@ import {
   BROADCAST_CHAT_SERVER_PUBLIC,
   PLAYERS_CREATED,
   SERVER_FRAMES_SKIPPED,
-  TIMELINE_BEFORE_GAME_START,
+  TIMELINE_BEFORE_LOOP_START,
   TIMELINE_CLOCK_HOUR,
   TIMELINE_CLOCK_MINUTE,
   TIMELINE_CLOCK_SECOND,
@@ -48,7 +48,7 @@ export default class GameMetrics extends System {
     this.listeners = {
       [PLAYERS_CREATED]: this.onPlayerCreated,
       [SERVER_FRAMES_SKIPPED]: this.onFramesSkipped,
-      [TIMELINE_BEFORE_GAME_START]: this.onBeforeGameStart,
+      [TIMELINE_BEFORE_LOOP_START]: this.onBeforeGameStart,
       [TIMELINE_CLOCK_HOUR]: this.onHour,
       [TIMELINE_CLOCK_MINUTE]: this.onMinute,
       [TIMELINE_CLOCK_SECOND]: this.onSecond,

@@ -35,4 +35,13 @@ export default class FFAGameManifest extends GameManifest {
 
     this.app.storage.gameEntity.attach(new Match());
   }
+
+  stopSystems(): void {
+    this.app.log.debug('Stopping FFA systems');
+    const loadedSystems = [...this.app.systems];
+    [GamePlayers, ScoreDetailedResponse, InfernosPeriodic, InviteCommandHandler, JoinCommandHandler, GameFlag, DropCommandHandler].forEach(systemToStop => {
+      const system = loadedSystems.find(system => system.constructor.name === systemToStop.name);
+      this.app.stopSystem(system);
+    });
+  }
 }

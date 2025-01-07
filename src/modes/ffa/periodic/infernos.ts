@@ -1,5 +1,5 @@
 import { MOB_TYPES } from '@airbattle/protocol';
-import { POWERUPS_ADD_PERIODIC, TIMELINE_BEFORE_GAME_START } from '../../../events';
+import { POWERUPS_ADD_PERIODIC, POWERUPS_CLEAR_PERIODICS, TIMELINE_GAME_MODE_START } from '../../../events';
 import { System } from '../../../server/system';
 import { PeriodicPowerupTemplate } from '../../../types';
 
@@ -8,8 +8,12 @@ export default class InfernosPeriodic extends System {
     super({ app });
 
     this.listeners = {
-      [TIMELINE_BEFORE_GAME_START]: this.init,
+      [TIMELINE_GAME_MODE_START]: this.init,
     };
+  }
+
+  override onStop() {
+    this.emit(POWERUPS_CLEAR_PERIODICS);
   }
 
   init(): void {

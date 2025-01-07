@@ -1,6 +1,6 @@
 import { Circle } from 'collisions';
 import { COLLISIONS_OBJECT_TYPES, MAP_SIZE, MOUNTAIN_OBJECTS } from '../../constants';
-import { COLLISIONS_ADD_OBJECT, TIMELINE_BEFORE_GAME_START } from '../../events';
+import { COLLISIONS_ADD_OBJECT, COLLISIONS_REMOVE_OBJECT, TIMELINE_BEFORE_LOOP_START } from '../../events';
 import { Mountain } from '../../types';
 import HitCircles from '../components/hit-circles';
 import Hitbox from '../components/hitbox';
@@ -11,20 +11,31 @@ import Entity from '../entity';
 import { System } from '../system';
 
 export default class GameMountains extends System {
+  private start_id: number
+  private end_id: number
+
   constructor({ app }) {
     super({ app });
 
     this.listeners = {
-      [TIMELINE_BEFORE_GAME_START]: this.loadMountains,
+      [TIMELINE_BEFORE_LOOP_START]: this.loadMountains,
+      ['TEST_UNLOAD_MOUNTAINS']: this.unloadMountains,
+      ['TEST_LOAD_MOUNTAINS']: this.loadMountains,
     };
   }
 
   loadMountains(): void {
+    let id: number;
     MOUNTAIN_OBJECTS.forEach(([x, y, radius]) => {
+      id = this.helpers.createMountainMobId();
+      if (!this.start_id) {
+        this.start_id = id
+      }
+
       const mountain: Mountain = new Entity().attach(
         new Hitbox(),
         new HitCircles([[0, 0, radius]]),
-        new Id(this.helpers.createServiceMobId()),
+        new Id(id),
         new Position(x, y),
         new Rotation(0)
       );
@@ -46,7 +57,22 @@ export default class GameMountains extends System {
 
       this.storage.mobList.set(mountain.id.current, mountain);
     });
+    this.end_id = id;
 
     this.log.debug(`Mountains loaded: ${MOUNTAIN_OBJECTS.length}`);
+  }
+
+  unloadMountains(): void {
+    for (let id = this.start_id; id <= this.end_id; id++) {
+      const mountain = this.storage.mobList.get(id);
+      this.emit(COLLISIONS_REMOVE_OBJECT, mountain.hitbox.current);
+      this.storage.mobList.delete(id);
+    }
+
+    this.helpers.resetMountainMobIds();
+    this.start_id = null;
+    this.end_id = null;
+
+    this.log.debug('Mountains unloaded.');
   }
 }

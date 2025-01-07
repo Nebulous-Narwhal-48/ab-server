@@ -1,4 +1,4 @@
-import { GAME_TYPES } from '@airbattle/protocol';
+import { GAME_TYPES, SERVER_CUSTOM_TYPES, SERVER_PACKETS, ServerPackets } from '@airbattle/protocol';
 import { Collisions } from 'collisions';
 import { Netmask } from 'netmask';
 import EventEmitter from 'eventemitter3';
@@ -16,6 +16,7 @@ import {
   CHAT_EMIT_DELAYED_EVENTS,
   CHAT_MUTE_EMIT_DELAYED_EVENTS,
   COLLISIONS_DETECT,
+  CONNECTIONS_SEND_PACKETS,
   PLAYERS_EMIT_CHANNEL_CONNECT,
   PLAYERS_EMIT_CHANNEL_DISCONNECT,
   PLAYERS_EMIT_CHANNEL_FLAG,
@@ -25,8 +26,8 @@ import {
   PROJECTILES_UPDATE,
   SERVER_FRAMES_SKIPPED,
   SPECTATE_EMIT_CHANNEL_EVENTS,
-  TIMELINE_BEFORE_GAME_START,
-  TIMELINE_GAME_START,
+  TIMELINE_BEFORE_LOOP_START,
+  TIMELINE_GAME_MODE_START,
   TIMELINE_LOOP_END,
   TIMELINE_LOOP_START,
   TIMELINE_LOOP_TICK,
@@ -172,20 +173,7 @@ export default class GameServerBootstrap implements GameServerBootstrapInterface
     this.helpers = new Helpers({ app: this });
     this.ticker = new GameTicker({ app: this, interval: SERVER_LOOP_INTERVAL_NS });
 
-    /**
-     * Game type validation.
-     */
-    if (this.config.server.typeId === GAME_TYPES.FFA) {
-      this.gameMode = new FFAGameManifest({ app: this });
-    } else if (this.config.server.typeId === GAME_TYPES.CTF) {
-      this.gameMode = new CTFGameManifest({ app: this });
-    } else if (this.config.server.typeId === GAME_TYPES.BTR) {
-      this.gameMode = new BTRGameManifest({ app: this });
-    } else {
-      this.log.fatal(`Unsupported game type ${this.config.server.type}!`);
-
-      process.exit(1);
-    }
+    this.replaceGameMode();
 
     /**
      * Scale factor validation.
@@ -246,6 +234,49 @@ export default class GameServerBootstrap implements GameServerBootstrapInterface
     this.log.debug('Powerups spawn: %o', this.config.powerups);
   }
 
+  createGameMode(): GameManifest {
+    if (this.config.server.typeId === GAME_TYPES.FFA) {
+      return new FFAGameManifest({ app: this });
+    } else if (this.config.server.typeId === GAME_TYPES.CTF) {
+      return new CTFGameManifest({ app: this });
+    } else if (this.config.server.typeId === GAME_TYPES.BTR) {
+      return new BTRGameManifest({ app: this });
+    } else {
+      this.log.fatal(`Unsupported game type ${this.config.server.type}!`);
+
+      process.exit(1);
+    }
+  }
+
+  replaceGameMode() {
+    const oldMode = this.gameMode;
+    if (oldMode) {
+      oldMode.stopSystems();
+    }
+    
+    if (this.storage.gameEntity) {
+      this.storage.gameEntity.match.isActive = false;
+    }
+      
+    this.gameMode = this.createGameMode();
+
+    if (oldMode) {
+      const broadcast_recipients = [...this.storage.mainConnectionIdList];
+      this.events.emit(
+        CONNECTIONS_SEND_PACKETS,
+        {
+          c: SERVER_PACKETS.SERVER_CUSTOM,
+          type: 202 as SERVER_CUSTOM_TYPES, //TODO: add new SERVER_CUSTOM_TYPES,
+          data: JSON.stringify({
+            type: this.config.server.typeId,
+          }),
+        } as ServerPackets.ServerCustom,
+        broadcast_recipients
+      );
+      this.events.emit(TIMELINE_GAME_MODE_START);
+    }
+  }
+
   /**
    * Register system event listeners.
    *
@@ -274,6 +305,9 @@ export default class GameServerBootstrap implements GameServerBootstrapInterface
    * @param system
    */
   stopSystem(system: System): void {
+    if (!system) return;
+    system.onStop();
+
     this.systems.delete(system);
 
     Object.keys(system.listeners).forEach(listener => {
@@ -299,14 +333,14 @@ export default class GameServerBootstrap implements GameServerBootstrapInterface
      * Prepare hitboxes cache, add built-in objects like mountains,
      * predefined infernos/shields etc.
      */
-    this.events.emit(TIMELINE_BEFORE_GAME_START);
+    this.events.emit(TIMELINE_BEFORE_LOOP_START);
 
     this.storage.gameEntity.start = Date.now();
 
     /**
      * Event for match starting (ctf and btr).
      */
-    this.events.emit(TIMELINE_GAME_START);
+    this.events.emit(TIMELINE_GAME_MODE_START);
 
     this.ticker.start(this.mainLoop, this);
 

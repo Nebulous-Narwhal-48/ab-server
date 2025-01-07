@@ -12,7 +12,7 @@ import {
   PLAYERS_SET_NEW_HORIZON,
   PLAYERS_UPDATE_HORIZON,
   SERVER_UPDATE_SCALE_FACTOR,
-  TIMELINE_BEFORE_GAME_START,
+  TIMELINE_BEFORE_LOOP_START,
   TIMELINE_LOOP_TICK,
   VIEWPORTS_CREATE,
   VIEWPORTS_REMOVE,
@@ -45,7 +45,7 @@ export default class GameViewports extends System {
       [PLAYERS_UPDATE_HORIZON]: this.onUpdatePlayerHorizon,
       [PLAYERS_SET_NEW_HORIZON]: this.onGetNewPlayerHorizon,
       [TIMELINE_LOOP_TICK]: this.onUpdatePlayerHorizons,
-      [TIMELINE_BEFORE_GAME_START]: this.initServerScaleFactorLimit,
+      [TIMELINE_BEFORE_LOOP_START]: this.initServerScaleFactorLimit,
     };
   }
 

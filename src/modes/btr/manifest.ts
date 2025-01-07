@@ -49,4 +49,12 @@ export default class BTRGameManifest extends GameManifest {
 
     this.app.storage.gameEntity.match.shipType = shipType;
   }
+
+  stopSystems(): void {
+    const loadedSystems = [...this.app.systems];
+    [ServerCustomBroadcast, GameFirewallBroadcast, PlayersAliveBroadcast, BTRRespawnCommandHandler, ScoreDetailedResponse, GameEndpointAPI, GameMatches, GamePlayers,].forEach(systemToStop => {
+      const system = loadedSystems.find(system => system.constructor.name === systemToStop.name);
+      this.app.stopSystem(system);
+    });
+  }
 }

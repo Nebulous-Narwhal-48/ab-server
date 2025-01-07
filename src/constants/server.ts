@@ -83,7 +83,9 @@ export const SERVER_BOUNCE_MIN_SPEED = 1;
  * IDs from SERVER_MIN_SERVICE_MOB_ID to SERVER_MIN_MOB_ID
  * are for service use (like mountains entities, flags, etc.).
  */
-export const SERVER_MIN_SERVICE_MOB_ID = 128;
+export const SERVER_MIN_SERVICE_MOB_ID = 64;
+
+export const SERVER_MIN_MOUNTAIN_MOB_ID = 128;
 
 export const SERVER_MIN_MOB_ID = 1024;
 

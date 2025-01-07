@@ -107,4 +107,11 @@ export class System {
   protected emitDelayed(): void {
     this.defaultChannel.emitDelayed();
   }
+
+  /**
+   * Used by game mode systems to remove mode specific stuff (flags, ..)
+   */
+  public onStop() {
+
+  }
 }

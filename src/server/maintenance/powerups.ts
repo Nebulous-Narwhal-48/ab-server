@@ -18,7 +18,7 @@ import {
   TIMELINE_CLOCK_MINUTE,
   TIMELINE_CLOCK_SECOND,
   TIMELINE_GAME_MATCH_START,
-  TIMELINE_GAME_START,
+  TIMELINE_GAME_MODE_START,
   POWERUPS_UPDATE_CONFIG,
 } from '../../events';
 import { getRandomInt } from '../../support/numbers';
@@ -64,12 +64,12 @@ export default class GamePowerups extends System {
       [TIMELINE_CLOCK_MINUTE]: this.onMinute,
       [TIMELINE_CLOCK_SECOND]: this.spawnRandomPowerups,
       [TIMELINE_GAME_MATCH_START]: this.forceDespawnUpgrades,
-      [TIMELINE_GAME_START]: this.onGameStart,
+      [TIMELINE_GAME_MODE_START]: this.onGameStart,
     };
   }
 
   onGameStart(): void {
-    this.shuffledChunks = [...this.storage.powerupSpawns.keys()];
+    this.shuffledChunks = [...this.storage.powerupSpawns[this.config.server.typeId].keys()];
 
     for (let i = this.shuffledChunks.length - 1; i > 0; i -= 1) {
       const j = ~~(Math.random() * (i + 1));
@@ -131,12 +131,12 @@ export default class GamePowerups extends System {
   }
 
   checkRandomSpawnInChunk(chunkId: ChunkId): void {
-    if (this.spawnChance === 0 || !this.storage.powerupSpawns.has(chunkId)) {
+    if (this.spawnChance === 0 || !this.storage.powerupSpawns[this.config.server.typeId].has(chunkId)) {
       return;
     }
 
     const now = Date.now();
-    const chunk = this.storage.powerupSpawns.get(chunkId);
+    const chunk = this.storage.powerupSpawns[this.config.server.typeId].get(chunkId);
 
     /**
      * No spawn if already spawned or if last spawn event in chunk was within timeout ago.
@@ -291,7 +291,7 @@ export default class GamePowerups extends System {
     if (chunkId !== null) {
       powerup.position.chunk = chunkId;
 
-      const chunk = this.storage.powerupSpawns.get(chunkId);
+      const chunk = this.storage.powerupSpawns[this.config.server.typeId].get(chunkId);
 
       chunk.spawned += 1;
       chunk.last = now;
@@ -338,8 +338,8 @@ export default class GamePowerups extends System {
   }
 
   updateSpawnGrid(chunkId: ChunkId): void {
-    if (this.storage.powerupSpawns.has(chunkId)) {
-      const chunk = this.storage.powerupSpawns.get(chunkId);
+    if (this.storage.powerupSpawns[this.config.server.typeId].has(chunkId)) {
+      const chunk = this.storage.powerupSpawns[this.config.server.typeId].get(chunkId);
 
       chunk.spawned -= 1;
     }

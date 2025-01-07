@@ -32,7 +32,7 @@ import {
   PROJECTILES_DELETE,
   RESPONSE_EVENT_LEAVE_HORIZON,
   RESPONSE_SCORE_UPDATE,
-  TIMELINE_BEFORE_GAME_START,
+  TIMELINE_BEFORE_LOOP_START,
 } from '../../events';
 import {
   BroadcastStorage,
@@ -67,7 +67,7 @@ export default class GameCollisions extends System {
       [COLLISIONS_ADD_OBJECT]: this.onAddToCollisionDetector,
       [COLLISIONS_DETECT]: this.onDetectCollisions,
       [COLLISIONS_REMOVE_OBJECT]: this.onRemoveFromCollisionDetector,
-      [TIMELINE_BEFORE_GAME_START]: this.initDetector,
+      [TIMELINE_BEFORE_LOOP_START]: this.initDetector,
     };
   }
 

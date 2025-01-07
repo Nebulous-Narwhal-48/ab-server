@@ -95,4 +95,12 @@ export default class CTFGameManifest extends GameManifest {
     this.app.storage.gameEntity.match.current = 0;
     this.app.storage.gameEntity.match.isActive = false;
   }
+
+  stopSystems(): void {
+    const loadedSystems = [...this.app.systems];
+    [DropCommandHandler, MatchCommandHandler, CTFPlayersCommandHandler, SwitchCommandHandler, SpawnCampingGuard, ScoreDetailedResponse, FlagCapturedBroadcast, FlagReturnedBroadcast, FlagTakenBroadcast, GameFlagBroadcast, ServerCustomBroadcast, InfernosPeriodic, ShieldsPeriodic, CTFGameChat, GameEndpointAPI, GameFlags, GameMatches, GamePlayers, GamePlayersStats, GameRankings, ElectionsCommandHandler, UsurpCommandHandler, Elections, FlagDropFix, Leaders, PhantomPlayerKick, Usurpation,].forEach(systemToStop => {
+      const system = loadedSystems.find(system => system.constructor.name === systemToStop.name);
+      this.app.stopSystem(system);
+    });
+  }
 }

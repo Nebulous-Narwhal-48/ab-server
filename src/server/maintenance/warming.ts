@@ -15,7 +15,7 @@ import {
   SHIPS_TYPES,
 } from '../../constants';
 import { PLAYERS_SPAWN_ZONES } from '../../constants/spawn';
-import { TIMELINE_BEFORE_GAME_START } from '../../events';
+import { TIMELINE_BEFORE_LOOP_START } from '../../events';
 import { has } from '../../support/objects';
 import { PowerupSpawnChunk, SpawnZones } from '../../types';
 import { System } from '../system';
@@ -175,7 +175,7 @@ export default class GameWarming extends System {
     super({ app });
 
     this.listeners = {
-      [TIMELINE_BEFORE_GAME_START]: this.warmCollisionCache,
+      [TIMELINE_BEFORE_LOOP_START]: this.warmCollisionCache,
     };
   }
 
@@ -287,38 +287,44 @@ export default class GameWarming extends System {
 
     this.log.debug('Mobs hitboxes pre calculated.');
 
-    if (has(PLAYERS_SPAWN_ZONES, `${this.config.server.typeId}`)) {
-      const gameSpawnZones = PLAYERS_SPAWN_ZONES[this.config.server.typeId];
+    for (let typeId in GAME_TYPES) {
+      if (isNaN(typeId as any)) continue;
+      if (has(PLAYERS_SPAWN_ZONES, `${this.config.server.typeId}`)) {
+        const gameSpawnZones = PLAYERS_SPAWN_ZONES[this.config.server.typeId];
 
-      for (let index = 0; index < gameSpawnZones.length; index += 1) {
-        const spawnZoneSetIndex = new Map<number, SpawnZones>();
+        for (let index = 0; index < gameSpawnZones.length; index += 1) {
+          const spawnZoneSetIndex = new Map<number, SpawnZones>();
 
-        this.storage.spawnZoneSet.set(index, spawnZoneSetIndex);
+          this.storage.spawnZoneSet[typeId].set(index, spawnZoneSetIndex);
 
-        Object.values(SHIPS_TYPES).forEach(shipType => {
-          const planeSpawnZones = new Map<number, [number, number]>();
+          Object.values(SHIPS_TYPES).forEach(shipType => {
+            const planeSpawnZones = new Map<number, [number, number]>();
 
-          spawnZoneSetIndex.set(shipType, planeSpawnZones);
-          generateSpawnZones(
-            planeSpawnZones,
-            SHIPS_ENCLOSE_RADIUS[shipType],
-            gameSpawnZones[index]
-          );
-        });
+            spawnZoneSetIndex.set(shipType, planeSpawnZones);
+            generateSpawnZones(
+              planeSpawnZones,
+              SHIPS_ENCLOSE_RADIUS[shipType],
+              gameSpawnZones[index]
+            );
+          });
+        }
+
+        this.log.debug(`Planes spawn zones pre calculated (${GAME_TYPES[typeId]}).`);
+      } else {
+        this.log.debug(`There are no planes spawn zones to cache (${GAME_TYPES[typeId]}).`);
       }
-
-      this.log.debug('Planes spawn zones pre calculated.');
-    } else {
-      this.log.debug('There are no planes spawn zones to cache.');
     }
 
-    generatePowerupSpawns(
-      this.storage.powerupSpawns,
-      this.config.server.typeId === GAME_TYPES.CTF
-        ? MAPS.vanilla.powerups.ctfGrid
-        : MAPS.vanilla.powerups.defaultGrid
-    );
-    this.log.debug('Power-ups spawn zones pre calculated.');
+    for (let typeId in GAME_TYPES) {
+      if (isNaN(typeId as any)) continue;
+      generatePowerupSpawns(
+        this.storage.powerupSpawns[typeId],
+        typeId === GAME_TYPES[GAME_TYPES.CTF]
+          ? MAPS.vanilla.powerups.ctfGrid
+          : MAPS.vanilla.powerups.defaultGrid
+      );
+      this.log.debug(`Power-ups spawn zones pre calculated (${GAME_TYPES[typeId]}).`);
+    }
 
     this.log.debug('Cache warmed up.');
   }
