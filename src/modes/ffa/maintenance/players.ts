@@ -26,7 +26,7 @@ export default class GamePlayers extends System {
      * A zone can be input by the administrator via the environment, or changed at runtime via a server command.
      */
     const zoneIndex = FFA_VALID_SPAWN_ZONES[this.config.ffa.spawnZoneName];
-    const spawnZones = this.storage.spawnZoneSet[this.config.server.typeId].get(zoneIndex).get(player.planetype.current);
+    const spawnZones = this.storage.spawnZoneSet[this.config.server.typeId][this.config.server.mapId].get(zoneIndex).get(0/*player.planetype.current*/);
 
     [x, y] = spawnZones.get(getRandomInt(0, spawnZones.size - 1));
     r = SHIPS_ENCLOSE_RADIUS[player.planetype.current] / 2;

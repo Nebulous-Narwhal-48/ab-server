@@ -1,5 +1,5 @@
 import { CTF_TEAMS } from '@airbattle/protocol';
-import { CTF_PLAYERS_EXTRA_SPAWN_ZONES, CTF_PLAYERS_SPAWN_ZONES } from '../../../constants';
+import { CTF_PLAYERS_EXTRA_SPAWN_ZONES, CTF_PLAYERS_SPAWN_ZONES_RADIUS } from '../../../constants';
 import {
   BROADCAST_CHAT_SERVER_PUBLIC,
   BROADCAST_PLAYER_RETEAM,
@@ -61,8 +61,8 @@ export default class GamePlayers extends System {
         }
       });
     } else {
-      blueTeam = this.storage.connectionIdByTeam.get(CTF_TEAMS.BLUE).size;
-      redTeam = this.storage.connectionIdByTeam.get(CTF_TEAMS.RED).size;
+      blueTeam = this.storage.connectionIdByTeam.get(CTF_TEAMS.BLUE)?.size || 0;
+      redTeam = this.storage.connectionIdByTeam.get(CTF_TEAMS.RED)?.size || 0;
     }
 
     if (blueTeam > redTeam) {
@@ -78,29 +78,30 @@ export default class GamePlayers extends System {
     const isBlue = player.team.current === CTF_TEAMS.BLUE;
     let x = 0;
     let y = 0;
-    let r = 0;
+    let r = CTF_PLAYERS_SPAWN_ZONES_RADIUS;
 
     if (
       player.bot.current ||
       !player.alivestatus.isLastStateKilled ||
       !this.config.ctf.extraSpawns
     ) {
-      if (isBlue) {
-        [x, y, r] = CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE];
-      } else {
-        [x, y, r] = CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED];
-      }
+      [x, y] = this.storage.spawnZoneSet[this.config.server.typeId][this.config.server.mapId].get(player.team.current).get(0/*player.planetype.current*/).get(0);
+      // if (isBlue) {
+      //   [x, y, r] = CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE];
+      // } else {
+      //   [x, y, r] = CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED];
+      // }
     } else if (player.alivestatus.isLastStateKilled) {
       if (isBlue) {
         if (player.position.x < 0) {
-          [x, y, r] = CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE];
+          [x, y] = this.storage.spawnZoneSet[this.config.server.typeId][this.config.server.mapId].get(player.team.current).get(0/*player.planetype.current*/).get(0);
         } else if (player.position.y < 0) {
           [x, y, r] = CTF_PLAYERS_EXTRA_SPAWN_ZONES[CTF_TEAMS.BLUE].SOUTH;
         } else {
           [x, y, r] = CTF_PLAYERS_EXTRA_SPAWN_ZONES[CTF_TEAMS.BLUE].NORTH;
         }
       } else if (player.position.x > -1024) {
-        [x, y, r] = CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED];
+        [x, y] = this.storage.spawnZoneSet[this.config.server.typeId][this.config.server.mapId].get(player.team.current).get(0/*player.planetype.current*/).get(0);
       } else if (player.position.y < -512) {
         [x, y, r] = CTF_PLAYERS_EXTRA_SPAWN_ZONES[CTF_TEAMS.RED].SOUTH;
       } else {

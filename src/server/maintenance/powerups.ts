@@ -69,7 +69,7 @@ export default class GamePowerups extends System {
   }
 
   onGameStart(): void {
-    this.shuffledChunks = [...this.storage.powerupSpawns[this.config.server.typeId].keys()];
+    this.shuffledChunks = [...this.storage.powerupSpawns[this.config.server.typeId][this.config.server.mapId].keys()];
 
     for (let i = this.shuffledChunks.length - 1; i > 0; i -= 1) {
       const j = ~~(Math.random() * (i + 1));
@@ -131,12 +131,12 @@ export default class GamePowerups extends System {
   }
 
   checkRandomSpawnInChunk(chunkId: ChunkId): void {
-    if (this.spawnChance === 0 || !this.storage.powerupSpawns[this.config.server.typeId].has(chunkId)) {
+    if (this.spawnChance === 0 || !this.storage.powerupSpawns[this.config.server.typeId][this.config.server.mapId].has(chunkId)) {
       return;
     }
 
     const now = Date.now();
-    const chunk = this.storage.powerupSpawns[this.config.server.typeId].get(chunkId);
+    const chunk = this.storage.powerupSpawns[this.config.server.typeId][this.config.server.mapId].get(chunkId);
 
     /**
      * No spawn if already spawned or if last spawn event in chunk was within timeout ago.
@@ -291,7 +291,7 @@ export default class GamePowerups extends System {
     if (chunkId !== null) {
       powerup.position.chunk = chunkId;
 
-      const chunk = this.storage.powerupSpawns[this.config.server.typeId].get(chunkId);
+      const chunk = this.storage.powerupSpawns[this.config.server.typeId][this.config.server.mapId].get(chunkId);
 
       chunk.spawned += 1;
       chunk.last = now;
@@ -338,8 +338,8 @@ export default class GamePowerups extends System {
   }
 
   updateSpawnGrid(chunkId: ChunkId): void {
-    if (this.storage.powerupSpawns[this.config.server.typeId].has(chunkId)) {
-      const chunk = this.storage.powerupSpawns[this.config.server.typeId].get(chunkId);
+    if (this.storage.powerupSpawns[this.config.server.typeId][this.config.server.mapId].has(chunkId)) {
+      const chunk = this.storage.powerupSpawns[this.config.server.typeId][this.config.server.mapId].get(chunkId);
 
       chunk.spawned -= 1;
     }

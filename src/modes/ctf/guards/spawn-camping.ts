@@ -3,9 +3,10 @@ import {
   CTF_AFK_CHECK_INTERVAL_SEC,
   CTF_AFK_HARD_LIMIT_TO_AUTO_SPECTATE_MS,
   CTF_AFK_SOFT_LIMIT_TO_AUTO_SPECTATE_MS,
-  CTF_PLAYERS_SPAWN_ZONES,
+  CTF_PLAYERS_SPAWN_ZONES_RADIUS,
   PLAYERS_ALIVE_STATUSES,
   PLAYERS_HEALTH,
+  SHIPS_TYPES,
 } from '../../../constants';
 import {
   BROADCAST_CHAT_SERVER_WHISPER,
@@ -26,43 +27,43 @@ export default class SpawnCampingGuard extends System {
 
   private now = 0;
 
-  private readonly blueSpawnBoards = {
-    MIN_X:
-      CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE][0] -
-      CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE][2] -
-      EXTRA_SPAWN_AREA,
-    MIN_Y:
-      CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE][1] -
-      CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE][2] -
-      EXTRA_SPAWN_AREA,
-    MAX_X:
-      CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE][0] +
-      CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE][2] +
-      EXTRA_SPAWN_AREA,
-    MAX_Y:
-      CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE][1] +
-      CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE][2] +
-      EXTRA_SPAWN_AREA,
-  };
+  // private readonly blueSpawnBoards = {
+  //   MIN_X:
+  //     CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE][0] -
+  //     CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE][2] -
+  //     EXTRA_SPAWN_AREA,
+  //   MIN_Y:
+  //     CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE][1] -
+  //     CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE][2] -
+  //     EXTRA_SPAWN_AREA,
+  //   MAX_X:
+  //     CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE][0] +
+  //     CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE][2] +
+  //     EXTRA_SPAWN_AREA,
+  //   MAX_Y:
+  //     CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE][1] +
+  //     CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.BLUE][2] +
+  //     EXTRA_SPAWN_AREA,
+  // };
 
-  private readonly redSpawnBoards = {
-    MIN_X:
-      CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED][0] -
-      CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED][2] -
-      EXTRA_SPAWN_AREA,
-    MIN_Y:
-      CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED][1] -
-      CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED][2] -
-      EXTRA_SPAWN_AREA,
-    MAX_X:
-      CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED][0] +
-      CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED][2] +
-      EXTRA_SPAWN_AREA,
-    MAX_Y:
-      CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED][1] +
-      CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED][2] +
-      EXTRA_SPAWN_AREA,
-  };
+  // private readonly redSpawnBoards = {
+  //   MIN_X:
+  //     CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED][0] -
+  //     CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED][2] -
+  //     EXTRA_SPAWN_AREA,
+  //   MIN_Y:
+  //     CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED][1] -
+  //     CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED][2] -
+  //     EXTRA_SPAWN_AREA,
+  //   MAX_X:
+  //     CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED][0] +
+  //     CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED][2] +
+  //     EXTRA_SPAWN_AREA,
+  //   MAX_Y:
+  //     CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED][1] +
+  //     CTF_PLAYERS_SPAWN_ZONES[CTF_TEAMS.RED][2] +
+  //     EXTRA_SPAWN_AREA,
+  // };
 
   constructor({ app }) {
     super({ app });
@@ -75,25 +76,35 @@ export default class SpawnCampingGuard extends System {
   }
 
   private isAtSpawn(x: number, y: number, team: TeamId): boolean {
-    if (
-      team === CTF_TEAMS.BLUE &&
-      x < this.blueSpawnBoards.MAX_X &&
-      x > this.blueSpawnBoards.MIN_X &&
-      y < this.blueSpawnBoards.MAX_Y &&
-      y > this.blueSpawnBoards.MIN_Y
-    ) {
+    const [zone_x, zone_y] = this.storage.spawnZoneSet[this.config.server.typeId][this.config.server.mapId].get(team).get(0/*SHIPS_TYPES.PREDATOR*/).get(0);
+    const MIN_X = zone_x - CTF_PLAYERS_SPAWN_ZONES_RADIUS - EXTRA_SPAWN_AREA;
+    const MIN_Y = zone_y - CTF_PLAYERS_SPAWN_ZONES_RADIUS - EXTRA_SPAWN_AREA;
+    const MAX_X = zone_x + CTF_PLAYERS_SPAWN_ZONES_RADIUS + EXTRA_SPAWN_AREA;
+    const MAX_Y = zone_y + CTF_PLAYERS_SPAWN_ZONES_RADIUS + EXTRA_SPAWN_AREA;
+
+    if (x < MAX_X && x > MIN_X && y < MAX_Y && y > MIN_Y) {
       return true;
     }
 
-    if (
-      team === CTF_TEAMS.RED &&
-      x < this.redSpawnBoards.MAX_X &&
-      x > this.redSpawnBoards.MIN_X &&
-      y < this.redSpawnBoards.MAX_Y &&
-      y > this.redSpawnBoards.MIN_Y
-    ) {
-      return true;
-    }
+    // if (
+    //   team === CTF_TEAMS.BLUE &&
+    //   x < this.blueSpawnBoards.MAX_X &&
+    //   x > this.blueSpawnBoards.MIN_X &&
+    //   y < this.blueSpawnBoards.MAX_Y &&
+    //   y > this.blueSpawnBoards.MIN_Y
+    // ) {
+    //   return true;
+    // }
+
+    // if (
+    //   team === CTF_TEAMS.RED &&
+    //   x < this.redSpawnBoards.MAX_X &&
+    //   x > this.redSpawnBoards.MIN_X &&
+    //   y < this.redSpawnBoards.MAX_Y &&
+    //   y > this.redSpawnBoards.MIN_Y
+    // ) {
+    //   return true;
+    // }
 
     return false;
   }

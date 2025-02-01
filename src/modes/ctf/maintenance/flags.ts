@@ -2,11 +2,12 @@ import { CTF_CAPTURE_BOUNTY, CTF_TEAMS } from '@airbattle/protocol';
 import { Circle, Polygon } from 'collisions';
 import {
   COLLISIONS_OBJECT_TYPES,
-  CTF_FLAGS_POSITIONS,
-  CTF_FLAGS_SPAWN_ZONE_COLLISIONS,
+  CTF_FLAGS_SPAWN_ZONE_COLLISION_HEIGHT,
+  CTF_FLAGS_SPAWN_ZONE_COLLISION_WIDTH,
   CTF_FLAG_COLLISIONS,
   CTF_FLAG_OWNER_INACTIVITY_TIMEOUT_MS,
   CTF_RETURNED_FLAG_INACTIVITY_TIMEOUT_MS,
+  MAPS,
   MAP_SIZE,
   PLAYERS_ALIVE_STATUSES,
 } from '../../../constants';
@@ -56,6 +57,7 @@ export default class GameFlags extends System {
       [PLAYERS_BEFORE_REMOVE]: this.onPlayerDelete,
       [TIMELINE_GAME_MODE_START]: this.onGameModeStart,
       [TIMELINE_CLOCK_MINUTE]: this.checkFlagsState,
+      ["MAP_CHANGED"]: this.onMapChanged,
     };
   }
 
@@ -87,7 +89,7 @@ export default class GameFlags extends System {
       redFlag = this.storage.mobList.get(this.storage.ctfFlagRedId) as Flag;      
     } else {
       for (const flag of [blueFlag, redFlag]) {
-        const [x, y] = CTF_FLAGS_POSITIONS[flag.team.current];
+        const [x, y] = MAPS[this.config.server.mapId].object.bases[flag.team.current];
         flag.position.x = x;
         flag.position.y = y;
         flag.owner.previous = 0;
@@ -111,12 +113,46 @@ export default class GameFlags extends System {
     this.emit(COLLISIONS_ADD_OBJECT, this.storage.redDropZone.hitbox.current);
   }
 
+  onMapChanged() {
+    // update drop zones positions
+    this.storage.blueDropZone.position.x = MAPS[this.config.server.mapId].objects.bases[CTF_TEAMS.BLUE][0];
+    this.storage.blueDropZone.position.y = MAPS[this.config.server.mapId].objects.bases[CTF_TEAMS.BLUE][1];
+    this.storage.redDropZone.position.x = MAPS[this.config.server.mapId].objects.bases[CTF_TEAMS.RED][0];
+    this.storage.redDropZone.position.y = MAPS[this.config.server.mapId].objects.bases[CTF_TEAMS.RED][1];
+
+    this.storage.blueDropZone.hitbox.x = this.storage.blueDropZone.position.x + MAP_SIZE.HALF_WIDTH - CTF_FLAGS_SPAWN_ZONE_COLLISION_WIDTH / 2;
+    this.storage.blueDropZone.hitbox.current.x = this.storage.blueDropZone.hitbox.x;
+    this.storage.blueDropZone.hitbox.y = this.storage.blueDropZone.position.y + MAP_SIZE.HALF_HEIGHT - CTF_FLAGS_SPAWN_ZONE_COLLISION_HEIGHT / 2;
+    this.storage.blueDropZone.hitbox.current.y = this.storage.blueDropZone.hitbox.y;
+    this.storage.redDropZone.hitbox.x = this.storage.redDropZone.position.x + MAP_SIZE.HALF_WIDTH - CTF_FLAGS_SPAWN_ZONE_COLLISION_WIDTH / 2;
+    this.storage.redDropZone.hitbox.current.x = this.storage.redDropZone.hitbox.x;
+    this.storage.redDropZone.hitbox.y = this.storage.redDropZone.position.y + MAP_SIZE.HALF_HEIGHT - CTF_FLAGS_SPAWN_ZONE_COLLISION_HEIGHT / 2;
+    this.storage.redDropZone.hitbox.current.y = this.storage.redDropZone.hitbox.y;
+
+    // reset flags, force drop
+    const blueFlag = this.storage.mobList.get(this.storage.ctfFlagBlueId) as Flag;
+    const redFlag = this.storage.mobList.get(this.storage.ctfFlagRedId) as Flag;
+    if (redFlag.owner.current !== 0 && this.helpers.isPlayerConnected(redFlag.owner.current)) {
+      const player = this.storage.playerList.get(redFlag.owner.current);
+      player.planestate.flagspeed = false;
+      this.emit(BROADCAST_PLAYER_UPDATE, redFlag.owner.current);
+    }
+    if (blueFlag.owner.current !== 0 && this.helpers.isPlayerConnected(blueFlag.owner.current)) {
+      const player = this.storage.playerList.get(blueFlag.owner.current);
+      player.planestate.flagspeed = false;
+      this.emit(BROADCAST_PLAYER_UPDATE, blueFlag.owner.current);
+    }
+    this.onResetFlags();
+    this.emit(BROADCAST_GAME_FLAG, CTF_TEAMS.BLUE);
+    this.emit(BROADCAST_GAME_FLAG, CTF_TEAMS.RED);
+  }
+
   initFlagElements(): void {
     /**
      * Blue capture zone.
      */
     {
-      const [x, y, w, h] = CTF_FLAGS_SPAWN_ZONE_COLLISIONS[CTF_TEAMS.BLUE];
+      const [x, y, w, h] = [...MAPS[this.config.server.mapId].objects.bases[CTF_TEAMS.BLUE], CTF_FLAGS_SPAWN_ZONE_COLLISION_WIDTH, CTF_FLAGS_SPAWN_ZONE_COLLISION_HEIGHT];
 
       const blueDropZone: FlagZone = new Entity().attach(
         new Hitbox(),
@@ -154,7 +190,7 @@ export default class GameFlags extends System {
     {
       this.storage.ctfFlagBlueId = this.helpers.createServiceMobId();
 
-      const [x, y] = CTF_FLAGS_POSITIONS[CTF_TEAMS.BLUE];
+      const [x, y] = MAPS[this.config.server.mapId].objects.bases[CTF_TEAMS.BLUE];
 
       const blueFlag: Flag = new Entity().attach(
         new FlagState(),
@@ -193,7 +229,7 @@ export default class GameFlags extends System {
      * Red drop zone.
      */
     {
-      const [x, y, w, h] = CTF_FLAGS_SPAWN_ZONE_COLLISIONS[CTF_TEAMS.RED];
+      const [x, y, w, h] = [...MAPS[this.config.server.mapId].objects.bases[CTF_TEAMS.RED], CTF_FLAGS_SPAWN_ZONE_COLLISION_WIDTH, CTF_FLAGS_SPAWN_ZONE_COLLISION_HEIGHT];
 
       const redDropZone: FlagZone = new Entity().attach(
         new Hitbox(),
@@ -231,7 +267,7 @@ export default class GameFlags extends System {
     {
       this.storage.ctfFlagRedId = this.helpers.createServiceMobId();
 
-      const [x, y] = CTF_FLAGS_POSITIONS[CTF_TEAMS.RED];
+      const [x, y] = MAPS[this.config.server.mapId].objects.bases[CTF_TEAMS.RED];
 
       const redFlag: Flag = new Entity().attach(
         new FlagState(),
@@ -586,7 +622,7 @@ export default class GameFlags extends System {
 
   resetBlueFlag(): void {
     const flag = this.storage.mobList.get(this.storage.ctfFlagBlueId) as Flag;
-    const [x, y] = CTF_FLAGS_POSITIONS[CTF_TEAMS.BLUE];
+    const [x, y] = MAPS[this.config.server.mapId].objects.bases[CTF_TEAMS.BLUE]; //CTF_FLAGS_POSITIONS[CTF_TEAMS.BLUE];
 
     flag.position.x = x;
     flag.position.y = y;
@@ -608,7 +644,7 @@ export default class GameFlags extends System {
 
   resetRedFlag(): void {
     const flag = this.storage.mobList.get(this.storage.ctfFlagRedId) as Flag;
-    const [x, y] = CTF_FLAGS_POSITIONS[CTF_TEAMS.RED];
+    const [x, y] = MAPS[this.config.server.mapId].objects.bases[CTF_TEAMS.RED]; //CTF_FLAGS_POSITIONS[CTF_TEAMS.RED];
 
     flag.position.x = x;
     flag.position.y = y;

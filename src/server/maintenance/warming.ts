@@ -1,10 +1,9 @@
 import { CTF_TEAMS, GAME_TYPES } from '@airbattle/protocol';
 import {
-  CTF_FLAGS_SPAWN_ZONE_COLLISIONS,
+  CTF_FLAGS_SPAWN_ZONE_COLLISION_WIDTH,
   CTF_FLAG_COLLISIONS,
   MAPS,
   MAP_COORDS,
-  MOUNTAIN_OBJECTS,
   PI_X2,
   POWERUPS_COLLISIONS,
   POWERUPS_RESPAWN_TIMEOUT_MS,
@@ -14,47 +13,46 @@ import {
   SHIPS_SPECS,
   SHIPS_TYPES,
 } from '../../constants';
-import { PLAYERS_SPAWN_ZONES } from '../../constants/spawn';
 import { TIMELINE_BEFORE_LOOP_START } from '../../events';
 import { has } from '../../support/objects';
-import { PowerupSpawnChunk, SpawnZones } from '../../types';
+import { MapId, PowerupSpawnChunk, SpawnZones } from '../../types';
 import { System } from '../system';
 
 /**
  * TODO: combine data from the constants. Now the code is duplicated.
  */
-const buildinObjects = [
-  [
-    CTF_FLAGS_SPAWN_ZONE_COLLISIONS[CTF_TEAMS.BLUE][0],
-    CTF_FLAGS_SPAWN_ZONE_COLLISIONS[CTF_TEAMS.BLUE][1],
-    CTF_FLAGS_SPAWN_ZONE_COLLISIONS[CTF_TEAMS.BLUE][2],
-  ],
-  [
-    CTF_FLAGS_SPAWN_ZONE_COLLISIONS[CTF_TEAMS.RED][0],
-    CTF_FLAGS_SPAWN_ZONE_COLLISIONS[CTF_TEAMS.RED][1],
-    CTF_FLAGS_SPAWN_ZONE_COLLISIONS[CTF_TEAMS.RED][2],
-  ],
-  [
-    // Europe inferno.
-    920, -2800, 50,
-  ],
-  [
-    // Blue base inferno.
-    -7440, -1360, 50,
-  ],
-  [
-    // Red base inferno.
-    6565, -935, 50,
-  ],
-  [
-    // Blue base shield.
-    -9300, -1480, 50,
-  ],
-  [
-    // Red base shield.
-    8350, -935, 50,
-  ],
-];
+// const buildinObjects = [
+//   [
+//     CTF_FLAGS_SPAWN_ZONE_COLLISIONS[CTF_TEAMS.BLUE][0],
+//     CTF_FLAGS_SPAWN_ZONE_COLLISIONS[CTF_TEAMS.BLUE][1],
+//     CTF_FLAGS_SPAWN_ZONE_COLLISIONS[CTF_TEAMS.BLUE][2],
+//   ],
+//   [
+//     CTF_FLAGS_SPAWN_ZONE_COLLISIONS[CTF_TEAMS.RED][0],
+//     CTF_FLAGS_SPAWN_ZONE_COLLISIONS[CTF_TEAMS.RED][1],
+//     CTF_FLAGS_SPAWN_ZONE_COLLISIONS[CTF_TEAMS.RED][2],
+//   ],
+//   [
+//     // Europe inferno.
+//     920, -2800, 50,
+//   ],
+//   [
+//     // Blue base inferno.
+//     -7440, -1360, 50,
+//   ],
+//   [
+//     // Red base inferno.
+//     6565, -935, 50,
+//   ],
+//   [
+//     // Blue base shield.
+//     -9300, -1480, 50,
+//   ],
+//   [
+//     // Red base shield.
+//     8350, -935, 50,
+//   ],
+// ];
 
 /**
  * Check the collisions. The game server isn't started yet,
@@ -64,8 +62,10 @@ const buildinObjects = [
  * @param y
  * @param r
  */
-const isCollide = (x: number, y: number, r: number): boolean => {
+const isCollide = (mapId: MapId, x: number, y: number, r: number): boolean => {
   let result = false;
+  const MOUNTAIN_OBJECTS = MAPS[mapId].mountain_objects;
+  const buildinObjects = [[...MAPS[mapId].objects.bases[CTF_TEAMS.BLUE], CTF_FLAGS_SPAWN_ZONE_COLLISION_WIDTH], [...MAPS[mapId].objects.bases[CTF_TEAMS.RED], CTF_FLAGS_SPAWN_ZONE_COLLISION_WIDTH]];
 
   for (let index = 0; index < MOUNTAIN_OBJECTS.length; index += 1) {
     const [mx, my, mr] = MOUNTAIN_OBJECTS[index];
@@ -101,7 +101,7 @@ const isCollide = (x: number, y: number, r: number): boolean => {
  * @param radius enclose circle radius
  * @param spawnZone bounds of spawn zone
  */
-const generateSpawnZones = (storage: SpawnZones, radius: number, spawnZone: any): void => {
+const generateSpawnZones = (mapId: MapId, storage: SpawnZones, radius: number, spawnZone: any): void => {
   let index = 0;
 
   for (let y = MAP_COORDS.MIN_Y + radius; y < MAP_COORDS.MAX_Y; y += radius * 2) {
@@ -112,7 +112,7 @@ const generateSpawnZones = (storage: SpawnZones, radius: number, spawnZone: any)
         y >= spawnZone.MIN_Y &&
         y <= spawnZone.MAX_Y
       ) {
-        if (!isCollide(x, y, radius * 2)) {
+        if (!isCollide(mapId, x, y, radius * 2)) {
           storage.set(index, [x, y]);
           index += 1;
         }
@@ -129,6 +129,7 @@ type PowerupsGrid = [number, number, number, number, number, number][];
  * @param storage
  */
 const generatePowerupSpawns = (
+  mapId: MapId,
   storage: Map<number, PowerupSpawnChunk>,
   grid: PowerupsGrid
 ): void => {
@@ -157,7 +158,7 @@ const generatePowerupSpawns = (
 
     for (let zoneY = y + RADIUS; zoneY < y + height; zoneY += RADIUS * 2) {
       for (let zoneX = x + RADIUS; zoneX < x + width; zoneX += RADIUS * 2) {
-        if (!isCollide(zoneX, zoneY, RADIUS * 2)) {
+        if (!isCollide(mapId, zoneX, zoneY, RADIUS * 2)) {
           chunk.zones.set(zoneIndex, [zoneX, zoneY]);
           zoneIndex += 1;
         }
@@ -195,10 +196,10 @@ export default class GameWarming extends System {
         calcRot = Math.floor(rot * 1000) / 1000;
       }
 
-      let minX = MAP_COORDS.MAX_X;
-      let minY = MAP_COORDS.MAX_Y;
-      let maxX = MAP_COORDS.MIN_X;
-      let maxY = MAP_COORDS.MIN_Y;
+      let minX = Infinity;
+      let minY = Infinity;
+      let maxX = -Infinity;
+      let maxY = -Infinity;
 
       for (let ci = 0; ci < collisions.length; ci += 1) {
         const [hitCircleX, hitCircleY, hitCircleR] = collisions[ci];
@@ -287,43 +288,58 @@ export default class GameWarming extends System {
 
     this.log.debug('Mobs hitboxes pre calculated.');
 
+
     for (let typeId in GAME_TYPES) {
       if (isNaN(typeId as any)) continue;
-      if (has(PLAYERS_SPAWN_ZONES, `${this.config.server.typeId}`)) {
-        const gameSpawnZones = PLAYERS_SPAWN_ZONES[this.config.server.typeId];
-
+      for (let mapId in MAPS) {
+        const gameSpawnZones = MAPS[mapId].players_spawn_zones[GAME_TYPES[typeId]];
+        if (!gameSpawnZones) {
+            throw new Error(`Missing spawn zones for ${GAME_TYPES[typeId]}/${mapId}`);
+        }
         for (let index = 0; index < gameSpawnZones.length; index += 1) {
+          if (!gameSpawnZones[index]) continue;
           const spawnZoneSetIndex = new Map<number, SpawnZones>();
 
-          this.storage.spawnZoneSet[typeId].set(index, spawnZoneSetIndex);
+          this.storage.spawnZoneSet[typeId][mapId].set(index, spawnZoneSetIndex);
 
-          Object.values(SHIPS_TYPES).forEach(shipType => {
+          //Object.values(SHIPS_TYPES).forEach(shipType => {
+          [2].forEach(shipType => {
             const planeSpawnZones = new Map<number, [number, number]>();
+            spawnZoneSetIndex.set(0/*shipType*/, planeSpawnZones);
 
-            spawnZoneSetIndex.set(shipType, planeSpawnZones);
-            generateSpawnZones(
-              planeSpawnZones,
-              SHIPS_ENCLOSE_RADIUS[shipType],
-              gameSpawnZones[index]
-            );
+            if ("X" in gameSpawnZones[index]) {
+              planeSpawnZones.set(0, [gameSpawnZones[index]["X"], gameSpawnZones[index]["Y"]]);
+            } else {            
+              generateSpawnZones(
+                mapId,
+                planeSpawnZones,
+                SHIPS_ENCLOSE_RADIUS[shipType],
+                gameSpawnZones[index]
+              );
+            }
           });
         }
-
-        this.log.debug(`Planes spawn zones pre calculated (${GAME_TYPES[typeId]}).`);
-      } else {
-        this.log.debug(`There are no planes spawn zones to cache (${GAME_TYPES[typeId]}).`);
+        this.log.debug(`Planes spawn zones pre calculated (${GAME_TYPES[typeId]}/${mapId}).`);
       }
     }
 
     for (let typeId in GAME_TYPES) {
       if (isNaN(typeId as any)) continue;
-      generatePowerupSpawns(
-        this.storage.powerupSpawns[typeId],
-        typeId === GAME_TYPES[GAME_TYPES.CTF]
-          ? MAPS.vanilla.powerups.ctfGrid
-          : MAPS.vanilla.powerups.defaultGrid
-      );
-      this.log.debug(`Power-ups spawn zones pre calculated (${GAME_TYPES[typeId]}).`);
+      for (let mapId in MAPS) {
+        if (GAME_TYPES[typeId] !== GAME_TYPES[GAME_TYPES.FFA] && GAME_TYPES[typeId] !== GAME_TYPES[GAME_TYPES.CTF]) {
+          // reuse FFA powerup spawns for other game types
+          this.storage.powerupSpawns[typeId][mapId] = this.storage.powerupSpawns[GAME_TYPES.FFA][mapId];
+        } else {
+          generatePowerupSpawns(
+            mapId,
+            this.storage.powerupSpawns[typeId][mapId],
+            typeId === GAME_TYPES[GAME_TYPES.CTF]
+              ? MAPS[mapId].powerups.ctfGrid
+              : MAPS[mapId].powerups.defaultGrid
+          );
+        }
+        this.log.debug(`Power-ups spawn zones pre calculated (${GAME_TYPES[typeId]}/${mapId}).`);
+      }
     }
 
     this.log.debug('Cache warmed up.');

@@ -1,5 +1,5 @@
 import { Circle } from 'collisions';
-import { COLLISIONS_OBJECT_TYPES, MAP_SIZE, MOUNTAIN_OBJECTS } from '../../constants';
+import { COLLISIONS_OBJECT_TYPES, MAP_SIZE, MAPS } from '../../constants';
 import { COLLISIONS_ADD_OBJECT, COLLISIONS_REMOVE_OBJECT, TIMELINE_BEFORE_LOOP_START } from '../../events';
 import { Mountain } from '../../types';
 import HitCircles from '../components/hit-circles';
@@ -19,13 +19,14 @@ export default class GameMountains extends System {
 
     this.listeners = {
       [TIMELINE_BEFORE_LOOP_START]: this.loadMountains,
-      ['TEST_UNLOAD_MOUNTAINS']: this.unloadMountains,
-      ['TEST_LOAD_MOUNTAINS']: this.loadMountains,
+      ['UNLOAD_MOUNTAINS']: this.unloadMountains,
+      ['LOAD_MOUNTAINS']: this.loadMountains,
     };
   }
 
   loadMountains(): void {
     let id: number;
+    const MOUNTAIN_OBJECTS = MAPS[this.config.server.mapId].mountain_objects;
     MOUNTAIN_OBJECTS.forEach(([x, y, radius]) => {
       id = this.helpers.createMountainMobId();
       if (!this.start_id) {

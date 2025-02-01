@@ -91,7 +91,7 @@ export default class PowerupsPeriodic extends System {
 
     powerup.interval *= MS_PER_SEC;
 
-    this.storage.powerupSpawns[this.config.server.typeId].forEach(spawn => {
+    this.storage.powerupSpawns[this.config.server.typeId][this.config.server.mapId].forEach(spawn => {
       if (
         powerup.posX >= spawn.x &&
         powerup.posX <= spawn.x + spawn.width &&

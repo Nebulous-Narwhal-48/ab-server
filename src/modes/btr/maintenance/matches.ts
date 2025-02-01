@@ -1,8 +1,7 @@
 import { BTR_FIREWALL_STATUS, SERVER_MESSAGE_TYPES } from '@airbattle/protocol';
 import {
-  BTR_FIREWALL_INITIAL_RADIUS,
-  BTR_FIREWALL_POSITION,
   BTR_SHIPS_TYPES_ORDER,
+  MAPS,
   MS_PER_SEC,
   PLAYERS_ALIVE_STATUSES,
   PLAYERS_HEALTH,
@@ -62,7 +61,7 @@ export default class GameMatches extends System {
 
     if (match.isActive) {
       match.firewall.radius =
-        BTR_FIREWALL_INITIAL_RADIUS + (match.firewall.speed * (Date.now() - match.start)) / 1000;
+      MAPS[this.config.server.mapId].objects.firewall.initial_radius + (match.firewall.speed * (Date.now() - match.start)) / 1000;
 
       const playersIterator = this.storage.playerList.values();
       let player: Player = playersIterator.next().value;
@@ -109,12 +108,13 @@ export default class GameMatches extends System {
   startMatch(): void {
     this.storage.gameEntity.match.isActive = true;
 
+    const {MIN_X, MAX_X, MIN_Y, MAX_Y} =  MAPS[this.config.server.mapId].objects.firewall.position;
     this.storage.gameEntity.match.firewall = {
       status: BTR_FIREWALL_STATUS.ACTIVE,
-      radius: BTR_FIREWALL_INITIAL_RADIUS,
-      posX: getRandomNumber(BTR_FIREWALL_POSITION.MIN_X, BTR_FIREWALL_POSITION.MAX_X),
-      posY: getRandomNumber(BTR_FIREWALL_POSITION.MIN_Y, BTR_FIREWALL_POSITION.MAX_Y),
-      speed: -this.config.btr.firewallSpeed,
+      radius: MAPS[this.config.server.mapId].objects.firewall.initial_radius,
+      posX: getRandomNumber(MIN_X, MAX_X),
+      posY: getRandomNumber(MIN_Y, MAX_Y),
+      speed: -MAPS[this.config.server.mapId].objects.firewall.speed, //this.config.btr.firewallSpeed,
     };
 
     const { match } = this.storage.gameEntity;

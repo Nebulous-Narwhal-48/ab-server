@@ -245,21 +245,12 @@ export class GameStorage {
    *
    * Index is needed for BTR, which has separate spawn zone boundaries for in match and waiting for match to start.
    */
-  public spawnZoneSet:{ [key in GAME_TYPES]: Map<number, Map<number, SpawnZones>> } = {
-    [GAME_TYPES.FFA]: new Map<number, Map<number, SpawnZones>>(),
-    [GAME_TYPES.CTF]: new Map<number, Map<number, SpawnZones>>(),
-    [GAME_TYPES.BTR]: new Map<number, Map<number, SpawnZones>>(),
-  }
+  public spawnZoneSet:{ [key in GAME_TYPES]: {MapId: Map<number/*zoneset index*/, Map<number/*ship type*/, SpawnZones>>} };
 
   /**
    * Pre-generated powerups spawn-zones.
    */
-  public powerupSpawns:{ [key in GAME_TYPES]: Map<number, PowerupSpawnChunk> } = {
-    [GAME_TYPES.FFA]: new Map(),
-    [GAME_TYPES.CTF]: new Map(),
-    [GAME_TYPES.BTR]: new Map(),
-  }
-
+  public powerupSpawns:{ [key in GAME_TYPES]: {MapId: Map<number, PowerupSpawnChunk>} };
   public serverPlayerId: number = null;
 
   /**

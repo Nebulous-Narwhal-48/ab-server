@@ -4,6 +4,8 @@
 >- https://github.com/Nebulous-Narwhal-48/airmash-frontend  
 >
 >New features:
+>- Change map
+>- Map editor
 >- Change game mode without restarting the server
 >- FFA teams
 >- FFA flag
@@ -21,8 +23,6 @@
 >- /server mode *mode*
 >- /invite *playerName*, /join *playerName*
 >- /skin add *url*, /skin remove *url*, /skin transfer *url* *playerName*
->
->Reddit post: https://www.reddit.com/r/airmash/comments/1gwbxdn/updates/
 
 # ab-server
 

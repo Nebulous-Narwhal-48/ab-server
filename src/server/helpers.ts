@@ -20,6 +20,8 @@ class Helpers {
    */
   private log: Logger;
 
+  private enableTestAccounts: boolean;
+
   /**
    * Server start time.
    */
@@ -28,6 +30,7 @@ class Helpers {
   constructor({ app }) {
     this.storage = app.storage;
     this.log = app.log;
+    this.enableTestAccounts = app.config.accounts.enableTestAccounts;
 
     this.resetClock();
   }
@@ -212,6 +215,13 @@ class Helpers {
    * Verify token and extract user id.
    */
   getUserIdFromToken(token: string): string {
+    if (this.enableTestAccounts && token === 'a') {
+      return '1';
+    }
+    if (this.enableTestAccounts && token === 'b') {
+      return '2';
+    }
+
     const auth = this.verifyToken(token) as AuthTokenData;
 
     /**

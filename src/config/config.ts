@@ -9,7 +9,6 @@ import {
   BOTS_IP_LIST_ENABLED,
   BOTS_SERVER_BOT_FLAG,
   BOTS_SERVER_BOT_NAME,
-  BTR_DEFAULT_FIREWALL_SPEED,
   BTR_DEFAULT_MATCH_WAIT_TIME,
   CONNECTIONS_DEFAULT_MAX_PLAYERS_PER_IP,
   CONNECTIONS_FLOODING_AUTOBAN,
@@ -54,7 +53,7 @@ import {
   USER_ACCOUNTS,
 } from '../constants';
 import { has } from '../support/objects';
-import { IPv4 } from '../types';
+import { IPv4, MapId } from '../types';
 
 export interface GameServerConfigInterface {
   /**
@@ -76,6 +75,8 @@ export interface GameServerConfigInterface {
 
   server: {
     typeId: number;
+
+    mapId: MapId;
 
     /**
      * Server base version.
@@ -221,6 +222,11 @@ export interface GameServerConfigInterface {
     active: boolean;
 
     /**
+     * Enable test accounts.
+     */
+    enableTestAccounts: boolean;
+
+    /**
      * URL of the public key server.
      */
     loginKeyServer: string;
@@ -265,6 +271,11 @@ export interface GameServerConfigInterface {
    * Maxmind DB.
    */
   geoBasePath: string;
+
+  /**
+   * Maps dir (data/maps)
+   */
+  mapsPath: string;
 
   /**
    * How often metrics collect data, in seconds.
@@ -377,7 +388,7 @@ export interface GameServerConfigInterface {
     /**
      * Speed of firewall as it moves toward the centre of the map.
      */
-    firewallSpeed: number;
+    //firewallSpeed: number;
 
     /**
      * Wait time between matches.
@@ -526,6 +537,8 @@ const config: GameServerConfigInterface = {
   server: {
     typeId: 0,
 
+    mapId: 'vanilla',
+
     version,
     edition: strValue(process.env.SERVER_EDITION, 'main'),
 
@@ -613,6 +626,7 @@ const config: GameServerConfigInterface = {
 
   accounts: {
     active: boolValue(process.env.USER_ACCOUNTS, USER_ACCOUNTS),
+    enableTestAccounts: false,
     loginKeyServer: strValue(process.env.AUTH_LOGIN_SERVER_KEY_URL, AUTH_LOGIN_SERVER_KEY_URL),
 
     userStats: {
@@ -642,6 +656,8 @@ const config: GameServerConfigInterface = {
   },
 
   geoBasePath: resolvePath(SERVER_DEFAULT_GEO_DB_PATH),
+
+  mapsPath: resolvePath('../data/maps'),
 
   metricsInterval: METRICS_LOG_INTERVAL_SEC,
 
@@ -700,7 +716,7 @@ const config: GameServerConfigInterface = {
   },
 
   btr: {
-    firewallSpeed: intValue(process.env.BTR_FIREWALL_SPEED, BTR_DEFAULT_FIREWALL_SPEED),
+    //firewallSpeed: intValue(process.env.BTR_FIREWALL_SPEED, BTR_DEFAULT_FIREWALL_SPEED),
     matchWaitTime: intValue(process.env.BTR_MATCH_WAIT_TIME, BTR_DEFAULT_MATCH_WAIT_TIME),
   },
 

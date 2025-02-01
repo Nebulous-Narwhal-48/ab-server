@@ -67,7 +67,7 @@ export default class GamePlayers extends System {
      * at index 1 is the active game mode zone.
      */
     const zoneSetIndex = this.storage.gameEntity.match.isActive ? 1 : 0;
-    const spawnZones = this.storage.spawnZoneSet[this.config.server.typeId].get(zoneSetIndex).get(player.planetype.current);
+    const spawnZones = this.storage.spawnZoneSet[this.config.server.typeId][this.config.server.mapId].get(zoneSetIndex).get(0/*player.planetype.current*/);
 
     [x, y] = spawnZones.get(getRandomInt(0, spawnZones.size - 1));
     r = SHIPS_ENCLOSE_RADIUS[player.planetype.current] / 2;

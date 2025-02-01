@@ -16,10 +16,12 @@ export const CTF_FLAGS_STATE_TO_NEW_PLAYER_BROADCAST_DELAY_MS = 100;
 /**
  * x, y, radius.
  */
-export const CTF_PLAYERS_SPAWN_ZONES = {
-  [CTF_TEAMS.BLUE]: [-8880, -2970, 50],
-  [CTF_TEAMS.RED]: [7820, -2930, 50],
-};
+// export const CTF_PLAYERS_SPAWN_ZONES = {
+//   [CTF_TEAMS.BLUE]: [-8880, -2970, 50],
+//   [CTF_TEAMS.RED]: [7820, -2930, 50],
+// };
+
+export const CTF_PLAYERS_SPAWN_ZONES_RADIUS = 50;
 
 export const CTF_PLAYERS_EXTRA_SPAWN_ZONES = {
   [CTF_TEAMS.BLUE]: {
@@ -33,10 +35,10 @@ export const CTF_PLAYERS_EXTRA_SPAWN_ZONES = {
   },
 };
 
-export const CTF_FLAGS_POSITIONS = {
-  [CTF_TEAMS.BLUE]: [-9670, -1470],
-  [CTF_TEAMS.RED]: [8600, -940],
-};
+// export const CTF_FLAGS_POSITIONS = {
+//   [CTF_TEAMS.BLUE]: [-9670, -1470],
+//   [CTF_TEAMS.RED]: [8600, -940],
+// };
 
 /**
  * offsetX, offsetY, radius.
@@ -46,10 +48,13 @@ export const CTF_FLAG_COLLISIONS = [[0, 0, 46]];
 /**
  * x, y, width, height.
  */
-export const CTF_FLAGS_SPAWN_ZONE_COLLISIONS = {
-  [CTF_TEAMS.BLUE]: [-9670, -1470, 126, 126],
-  [CTF_TEAMS.RED]: [8600, -940, 126, 126],
-};
+// export const CTF_FLAGS_SPAWN_ZONE_COLLISIONS = {
+//   [CTF_TEAMS.BLUE]: [-9670, -1470, 126, 126],
+//   [CTF_TEAMS.RED]: [8600, -940, 126, 126],
+// };
+
+export const CTF_FLAGS_SPAWN_ZONE_COLLISION_WIDTH = 126;
+export const CTF_FLAGS_SPAWN_ZONE_COLLISION_HEIGHT = 126;
 
 /**
  * Incativity time to capture by last owner after /drop.

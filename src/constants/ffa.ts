@@ -1,32 +1,32 @@
 import { SpawnZone } from '../types';
 
-export const FFA_SPAWN_EUROPE: SpawnZone = {
-  MIN_X: -512 * 2,
-  MAX_X: 512 * 6,
-  MIN_Y: -512 * 9,
-  MAX_Y: -512,
-};
+// export const FFA_SPAWN_EUROPE: SpawnZone = {
+//   MIN_X: -512 * 2,
+//   MAX_X: 512 * 6,
+//   MIN_Y: -512 * 9,
+//   MAX_Y: -512,
+// };
 
-export const FFA_SPAWN_CANADA: SpawnZone = {
-  MIN_X: -512 * 22,
-  MAX_X: -512 * 16,
-  MIN_Y: -512 * 11,
-  MAX_Y: -512 * 3,
-};
+// export const FFA_SPAWN_CANADA: SpawnZone = {
+//   MIN_X: -512 * 22,
+//   MAX_X: -512 * 16,
+//   MIN_Y: -512 * 11,
+//   MAX_Y: -512 * 3,
+// };
 
-export const FFA_SPAWN_LATAM: SpawnZone = {
-  MIN_X: -512 * 16,
-  MAX_X: -512 * 8,
-  MIN_Y: -512 * -5,
-  MAX_Y: -512 * -13,
-};
+// export const FFA_SPAWN_LATAM: SpawnZone = {
+//   MIN_X: -512 * 16,
+//   MAX_X: -512 * 8,
+//   MIN_Y: -512 * -5,
+//   MAX_Y: -512 * -13,
+// };
 
-export const FFA_SPAWN_ASIA: SpawnZone = {
-  MIN_X: -512 * -8,
-  MAX_X: -512 * -16,
-  MIN_Y: -512 * 6,
-  MAX_Y: -512 * -2,
-};
+// export const FFA_SPAWN_ASIA: SpawnZone = {
+//   MIN_X: -512 * -8,
+//   MAX_X: -512 * -16,
+//   MIN_Y: -512 * 6,
+//   MAX_Y: -512 * -2,
+// };
 
 /**
  * These are indexes mapping a semantic name to the spawn zone positions

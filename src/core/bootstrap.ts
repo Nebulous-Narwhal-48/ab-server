@@ -10,6 +10,8 @@ import {
   SERVER_SCALE_FACTOR_VALID_VALUES,
   UPGRADES_DEFAULT_DROP_CHANCE,
   POWERUPS_DEFAULT_SPAWN_LIMIT,
+  loadMaps,
+  MAPS,
 } from '../constants';
 import WsEndpoint from '../endpoints/ws';
 import {
@@ -323,6 +325,18 @@ export default class GameServerBootstrap implements GameServerBootstrapInterface
   async init(): Promise<void> {
     await this.initEndpoints();
     await this.initGeoCoder();
+    
+    await loadMaps(this.config.mapsPath);
+    this.storage.spawnZoneSet = {} as any;
+    this.storage.powerupSpawns = {} as any;
+    for (let typeId in GAME_TYPES) {
+      this.storage.spawnZoneSet[typeId] = {};
+      this.storage.powerupSpawns[typeId] = {};
+      for (let mapId in MAPS) {
+        this.storage.spawnZoneSet[typeId][mapId] = new Map();
+        this.storage.powerupSpawns[typeId][mapId] = new Map();
+      }
+    }
   }
 
   /**

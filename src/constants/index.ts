@@ -22,8 +22,6 @@ export * from './maps';
 
 export * from './metrics';
 
-export * from './mountains';
-
 export * from './players';
 
 export * from './powerups';
