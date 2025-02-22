@@ -1,5 +1,5 @@
 import { KeyObject } from 'crypto';
-import { SERVER_MIN_MOB_ID, SERVER_MIN_MOUNTAIN_MOB_ID, SERVER_MIN_SERVICE_MOB_ID } from '../constants';
+import { GAME_TYPES, SERVER_MIN_MOB_ID, SERVER_MIN_MOUNTAIN_MOB_ID, SERVER_MIN_SERVICE_MOB_ID } from '../constants';
 import {
   BackupConnectionId,
   BroadcastStorage,
@@ -31,7 +31,6 @@ import {
   UsersStorage,
   Viewports,
 } from '../types';
-import { GAME_TYPES } from '@airbattle/protocol';
 
 export class GameStorage {
   /**
@@ -270,7 +269,6 @@ export class GameStorage {
    * TODO: move in CTF specific storage.
    */
   public ctfFlagBlueId: number = null;
-
   public ctfFlagRedId: number = null;
 
   public blueDropZone: FlagZone;
@@ -299,6 +297,11 @@ export class GameStorage {
    * FFA team invites sent by player
    */
   public teamInvites: Map<PlayerId, Set<PlayerId>> = new Map();
+
+  /**
+   * Conquest
+   */
+  public conquestZones = new Array();
 
   /**
    * Public key from login server

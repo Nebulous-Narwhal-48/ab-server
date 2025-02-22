@@ -20,6 +20,8 @@ export * from './logs';
 
 export * from './maps';
 
+export * from './modes';
+
 export * from './metrics';
 
 export * from './players';

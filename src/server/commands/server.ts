@@ -1,4 +1,4 @@
-import { GAME_TYPES, SERVER_CUSTOM_TYPES, SERVER_PACKETS, ServerPackets } from '@airbattle/protocol';
+import { SERVER_CUSTOM_TYPES, SERVER_PACKETS, ServerPackets } from '@airbattle/protocol';
 import { GameServerConfigInterface } from '../../config';
 import {
   BYTES_PER_KB,
@@ -6,6 +6,7 @@ import {
   COLLISIONS_MAP_COORDS,
   CONNECTIONS_SUPERUSER_BAN_MS,
   FFA_VALID_SPAWN_ZONES,
+  GAME_TYPES,
   LIMITS_DEBUG,
   LIMITS_DEBUG_WEIGHT,
   MAP_COORDS,

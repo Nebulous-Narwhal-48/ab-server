@@ -1,6 +1,6 @@
 import { mkdirSync, readFileSync } from 'fs';
 import { dirname, isAbsolute, resolve } from 'path';
-import { FLAGS_ISO_TO_CODE, GAME_TYPES } from '@airbattle/protocol';
+import { FLAGS_ISO_TO_CODE } from '@airbattle/protocol';
 import dotenv from 'dotenv';
 import {
   AUTH_LOGIN_SERVER_KEY_URL,
@@ -19,6 +19,7 @@ import {
   CTF_QBOTS_FEATURES,
   FFA_DEFAULT_SPAWN_ZONE,
   FFA_VALID_SPAWN_ZONES,
+  GAME_TYPES,
   LIMITS_ANY,
   LIMITS_CHAT,
   LIMITS_CHAT_DECREASE_WEIGHT,

@@ -88,33 +88,20 @@ export default class GameFlags extends System {
       blueFlag = this.storage.mobList.get(this.storage.ctfFlagBlueId) as Flag;
       redFlag = this.storage.mobList.get(this.storage.ctfFlagRedId) as Flag;      
     } else {
-      for (const flag of [blueFlag, redFlag]) {
-        const [x, y] = MAPS[this.config.server.mapId].object.bases[flag.team.current];
-        flag.position.x = x;
-        flag.position.y = y;
-        flag.owner.previous = 0;
-        flag.owner.current = 0;
-        flag.owner.lastDrop = Date.now();
-        flag.flagstate.returned = true;
-        flag.flagstate.captured = false;
-        flag.flagstate.dropped = false;
-        flag.hitbox.x = x + MAP_SIZE.HALF_WIDTH + this.storage.flagHitboxesCache.x;
-        flag.hitbox.y = y + MAP_SIZE.HALF_HEIGHT + this.storage.flagHitboxesCache.y;
-        flag.hitbox.height = this.storage.flagHitboxesCache.height;
-        flag.hitbox.width = this.storage.flagHitboxesCache.width;
-        flag.hitbox.current.x = flag.hitbox.x - this.storage.flagHitboxesCache.x;
-        flag.hitbox.current.y = flag.hitbox.y - this.storage.flagHitboxesCache.y;
-      }
+      this.onResetFlags();
+
+      // reset zones positions because the map could have changed while another mode was active
+      this.resetZones();
     }
 
     this.emit(COLLISIONS_ADD_OBJECT, blueFlag.hitbox.current);
     this.emit(COLLISIONS_ADD_OBJECT, redFlag.hitbox.current);
     this.emit(COLLISIONS_ADD_OBJECT, this.storage.blueDropZone.hitbox.current);
     this.emit(COLLISIONS_ADD_OBJECT, this.storage.redDropZone.hitbox.current);
+    // it is not necessary to send BROADCAST_GAME_FLAG, because it will be sent in matches.ts onSecondTick
   }
 
-  onMapChanged() {
-    // update drop zones positions
+  resetZones() {
     this.storage.blueDropZone.position.x = MAPS[this.config.server.mapId].objects.bases[CTF_TEAMS.BLUE][0];
     this.storage.blueDropZone.position.y = MAPS[this.config.server.mapId].objects.bases[CTF_TEAMS.BLUE][1];
     this.storage.redDropZone.position.x = MAPS[this.config.server.mapId].objects.bases[CTF_TEAMS.RED][0];
@@ -128,6 +115,11 @@ export default class GameFlags extends System {
     this.storage.redDropZone.hitbox.current.x = this.storage.redDropZone.hitbox.x;
     this.storage.redDropZone.hitbox.y = this.storage.redDropZone.position.y + MAP_SIZE.HALF_HEIGHT - CTF_FLAGS_SPAWN_ZONE_COLLISION_HEIGHT / 2;
     this.storage.redDropZone.hitbox.current.y = this.storage.redDropZone.hitbox.y;
+  }
+
+  onMapChanged() {
+    // reset zones
+    this.resetZones();
 
     // reset flags, force drop
     const blueFlag = this.storage.mobList.get(this.storage.ctfFlagBlueId) as Flag;

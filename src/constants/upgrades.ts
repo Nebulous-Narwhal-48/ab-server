@@ -1,4 +1,4 @@
-import { GAME_TYPES } from '@airbattle/protocol';
+import { GAME_TYPES } from './modes';
 import { MS_PER_SEC } from './units';
 
 export const UPGRADES_DEFAULT_MIN_CHANCE = 0.3;
@@ -9,6 +9,7 @@ export const UPGRADES_MIN_VICTIM_SCORE_TO_DROP = {
   [GAME_TYPES.FFA]: 26,
   [GAME_TYPES.CTF]: 26,
   [GAME_TYPES.BTR]: 0,
+  [GAME_TYPES.CON]: 26,
 };
 
 export const UPGRADES_TYPES = {
@@ -64,5 +65,9 @@ export const UPGRADES_DEFAULT_DROP_CHANCE = {
   [GAME_TYPES.BTR]: {
     min: 1.0,
     max: 1.0,
+  },
+  [GAME_TYPES.CON]: {
+    min: 0.5,
+    max: 0.5,
   },
 };

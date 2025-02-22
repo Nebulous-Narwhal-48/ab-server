@@ -4,6 +4,7 @@
 >- https://github.com/Nebulous-Narwhal-48/airmash-frontend  
 >
 >New features:
+>- New game mode: Conquest
 >- Change map
 >- Map editor
 >- Change game mode without restarting the server
@@ -20,6 +21,7 @@
 >- SKINS_ENABLE
 >
 >New commands:
+>- /server map *mapId*
 >- /server mode *mode*
 >- /invite *playerName*, /join *playerName*
 >- /skin add *url*, /skin remove *url*, /skin transfer *url* *playerName*

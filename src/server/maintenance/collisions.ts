@@ -48,6 +48,7 @@ import {
   Viewport,
 } from '../../types';
 import { System } from '../system';
+import { CTF_TEAMS } from '@airbattle/protocol';
 
 const addViewer = (storage: BroadcastStorage, mobId: MobId, viewer: MainConnectionId): void => {
   if (storage.has(mobId)) {
@@ -95,6 +96,11 @@ export default class GameCollisions extends System {
 
   onDetectCollisions(): void {
     this.now = Date.now();
+
+    for (let zone of this.storage.conquestZones) {
+      zone.prev_netplayers = zone.netplayers;
+      zone.netplayers = 0;
+    }
 
     const broadcast: BroadcastStorage = new Map();
 
@@ -296,6 +302,10 @@ export default class GameCollisions extends System {
             if (type === COLLISIONS_OBJECT_TYPES.FLAGZONE) {
               this.emit(CTF_PLAYER_CROSSED_FLAGZONE, player.id.current, id);
 
+              const zone = this.storage.conquestZones[id];
+              if (zone)
+                zone.netplayers += player.team.current === CTF_TEAMS.RED ? 1 : -1;
+
               continue;
             }
 
@@ -401,6 +411,12 @@ export default class GameCollisions extends System {
         }
 
         player = playersIterator.next().value;
+      }
+    }
+
+    for (let zone of this.storage.conquestZones) {
+      if (zone.prev_netplayers != zone.netplayers) {
+        this.emit('CONQUEST_CONTROLPOINT_UPDATE', zone);
       }
     }
 

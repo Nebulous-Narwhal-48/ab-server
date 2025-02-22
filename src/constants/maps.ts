@@ -861,7 +861,7 @@ export async function loadMaps(directory) {
       const jsonPath = path.join(directory, `${mapId}/map.json`);
       const data = await fs.readFile(jsonPath, 'utf8');
       try {
-        const {bounds, walls, objects, players_spawn_zones} = JSON.parse(data);
+        const {bounds, walls, objects, players_spawn_zones, extra} = JSON.parse(data);
         MAPS[mapId] = {
           width: 32768,
           height: 16384,
@@ -869,6 +869,7 @@ export async function loadMaps(directory) {
           mountain_objects: walls,
           powerups: MAPS.vanilla.powerups,//todo
           objects,
+          extra,
           players_spawn_zones: players_spawn_zones || MAPS.vanilla.players_spawn_zones,
         };
       } catch (e) {

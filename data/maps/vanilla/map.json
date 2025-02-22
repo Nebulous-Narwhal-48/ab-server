@@ -15,6 +15,9 @@
         "BTR": [
             { "MIN_X": -120, "MIN_Y": -4500, "MAX_X": 2960, "MAX_Y": -960 },
             { "MIN_X": -13384, "MIN_Y": -6192, "MAX_X": 13384, "MAX_Y": 6192 }
+        ],
+        "CON": [
+            { "MIN_X": -16352, "MAX_X": 16352, "MIN_Y": -8160, "MAX_Y": 8160 }
         ]
     },
     "objects": {
@@ -27,7 +30,11 @@
         "position": { "MIN_X": 0, "MIN_Y": -2800, "MAX_X": 1200, "MAX_Y": -1800 },
         "initial_radius": 17000,
         "speed": 70
-      }
+      },
+      "controlpoints": [
+        [500, 0],
+        [-5700, 3000]
+      ]
     },
     "doodads": [
         [1009, -2308, 1, 0.9, 0.2, null, null],

@@ -1,4 +1,4 @@
-import { GAME_TYPES, SERVER_CUSTOM_TYPES, SERVER_PACKETS, ServerPackets } from '@airbattle/protocol';
+import { SERVER_CUSTOM_TYPES, SERVER_PACKETS, ServerPackets } from '@airbattle/protocol';
 import { Collisions } from 'collisions';
 import { Netmask } from 'netmask';
 import EventEmitter from 'eventemitter3';
@@ -12,6 +12,7 @@ import {
   POWERUPS_DEFAULT_SPAWN_LIMIT,
   loadMaps,
   MAPS,
+  GAME_TYPES,
 } from '../constants';
 import WsEndpoint from '../endpoints/ws';
 import {
@@ -63,6 +64,7 @@ import { GameStorage } from '../server/storage';
 import { System } from '../server/system';
 import { GameServerBootstrapInterface } from '../types';
 import GameTicker from './ticker';
+import ConquestGameManifest from '../modes/conquest/manifest';
 
 /**
  * Game server bootstrap.
@@ -243,6 +245,8 @@ export default class GameServerBootstrap implements GameServerBootstrapInterface
       return new CTFGameManifest({ app: this });
     } else if (this.config.server.typeId === GAME_TYPES.BTR) {
       return new BTRGameManifest({ app: this });
+    } else if (this.config.server.typeId === GAME_TYPES.CON) {
+      return new ConquestGameManifest({ app: this });
     } else {
       this.log.fatal(`Unsupported game type ${this.config.server.type}!`);
 

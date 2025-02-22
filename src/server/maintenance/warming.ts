@@ -1,7 +1,8 @@
-import { CTF_TEAMS, GAME_TYPES } from '@airbattle/protocol';
+import { CTF_TEAMS } from '@airbattle/protocol';
 import {
   CTF_FLAGS_SPAWN_ZONE_COLLISION_WIDTH,
   CTF_FLAG_COLLISIONS,
+  GAME_TYPES,
   MAPS,
   MAP_COORDS,
   PI_X2,
@@ -17,6 +18,7 @@ import { TIMELINE_BEFORE_LOOP_START } from '../../events';
 import { has } from '../../support/objects';
 import { MapId, PowerupSpawnChunk, SpawnZones } from '../../types';
 import { System } from '../system';
+import { RADIUS } from '../../modes/conquest/controlpoints';
 
 /**
  * TODO: combine data from the constants. Now the code is duplicated.
@@ -65,7 +67,11 @@ import { System } from '../system';
 const isCollide = (mapId: MapId, x: number, y: number, r: number): boolean => {
   let result = false;
   const MOUNTAIN_OBJECTS = MAPS[mapId].mountain_objects;
-  const buildinObjects = [[...MAPS[mapId].objects.bases[CTF_TEAMS.BLUE], CTF_FLAGS_SPAWN_ZONE_COLLISION_WIDTH], [...MAPS[mapId].objects.bases[CTF_TEAMS.RED], CTF_FLAGS_SPAWN_ZONE_COLLISION_WIDTH]];
+  const buildinObjects = [
+    [...MAPS[mapId].objects.bases[CTF_TEAMS.BLUE], CTF_FLAGS_SPAWN_ZONE_COLLISION_WIDTH], 
+    [...MAPS[mapId].objects.bases[CTF_TEAMS.RED], CTF_FLAGS_SPAWN_ZONE_COLLISION_WIDTH], 
+    [...MAPS[mapId].objects.controlpoints, RADIUS]
+  ];
 
   for (let index = 0; index < MOUNTAIN_OBJECTS.length; index += 1) {
     const [mx, my, mr] = MOUNTAIN_OBJECTS[index];
