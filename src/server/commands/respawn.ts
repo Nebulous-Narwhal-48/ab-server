@@ -1,4 +1,4 @@
-import { LIMITS_RESPAWN, LIMITS_RESPAWN_WEIGHT } from '../../constants';
+import { LIMITS_RESPAWN, LIMITS_RESPAWN_WEIGHT, SHIPS_SPECS } from '../../constants';
 import { COMMAND_RESPAWN, PLAYERS_RESPAWN } from '../../events';
 import { CHANNEL_RESPAWN_PLAYER } from '../../events/channels';
 import { MainConnectionId } from '../../types';
@@ -27,7 +27,7 @@ export default class RespawnCommandHandler extends System {
       return;
     }
 
-    if (shipType > 0 && shipType < 6 && !connection.pending.respawn) {
+    if (SHIPS_SPECS[shipType] && !connection.pending.respawn) {
       connection.pending.respawn = true;
 
       this.channel(CHANNEL_RESPAWN_PLAYER).delay(PLAYERS_RESPAWN, connection.playerId, shipType);

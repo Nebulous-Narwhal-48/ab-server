@@ -5,12 +5,12 @@ import {
   CONNECTIONS_LOGIN_REQUEST_PER_TICKS_LIMIT,
   CONNECTIONS_PACKET_ACK_TIMEOUT_MS,
   CONNECTIONS_PACKET_BACKUP_TIMEOUT_MS,
+  DEFAULT_SHIP_TYPE,
   MAP_SIZE,
   PLAYERS_ALIVE_STATUSES,
   PLAYERS_SPAWN_SHIELD_DURATION_MS,
   SERVER_MAX_PLAYERS_LIMIT,
   SHIPS_SPECS,
-  SHIPS_TYPES,
   UPGRADES_ACTION_TYPE,
   UPGRADES_START_AMOUNT,
 } from '../../../constants';
@@ -176,7 +176,7 @@ export default class GamePlayersConnect extends System {
     const shipType =
       this.config.server.typeId === GAME_TYPES.BTR
         ? this.storage.gameEntity.match.shipType
-        : SHIPS_TYPES.PREDATOR;
+        : DEFAULT_SHIP_TYPE;
 
     const player: Player = new Entity().attach(
       new AliveStatus(PLAYERS_ALIVE_STATUSES.DEFAULT),

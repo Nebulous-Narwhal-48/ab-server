@@ -17,7 +17,6 @@
 >New env variables:
 >- FFA_ENABLE_TEAMS
 >- FFA_ENABLE_FLAG
->- SERVER_TYPE=TDM
 >- SKINS_ENABLE
 >
 >New commands:

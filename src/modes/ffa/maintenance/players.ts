@@ -1,5 +1,5 @@
 import { CTF_TEAMS, GAME_TYPES } from '@airbattle/protocol';
-import { FFA_VALID_SPAWN_ZONES, SHIPS_ENCLOSE_RADIUS } from '../../../constants';
+import { FFA_VALID_SPAWN_ZONES, SHIPS_SPECS } from '../../../constants';
 import { BROADCAST_PLAYER_RETEAM, PLAYERS_ASSIGN_SPAWN_POSITION, PLAYERS_ASSIGN_TEAM, PLAYERS_UPDATE_TEAM, TIMELINE_GAME_MODE_START } from '../../../events';
 import { System } from '../../../server/system';
 import { getRandomInt } from '../../../support/numbers';
@@ -29,7 +29,7 @@ export default class GamePlayers extends System {
     const spawnZones = this.storage.spawnZoneSet[this.config.server.typeId][this.config.server.mapId].get(zoneIndex).get(0/*player.planetype.current*/);
 
     [x, y] = spawnZones.get(getRandomInt(0, spawnZones.size - 1));
-    r = SHIPS_ENCLOSE_RADIUS[player.planetype.current] / 2;
+    r = SHIPS_SPECS[player.planetype.current].enclose_radius / 2;
 
     player.position.x = x + getRandomInt(-r, r);
     player.position.y = y + getRandomInt(-r, r);

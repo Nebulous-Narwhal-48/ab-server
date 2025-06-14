@@ -1157,41 +1157,41 @@ export default class ServerCommandHandler extends System {
       }
 
       if (command.startsWith('map')) {
-        const [,mapId] = command.split(' ');
-        this.config.server.mapId = mapId;
-        if (mapId != 'vanilla')
-          this.config.ctf.extraSpawns = false;
-        this.emit('UNLOAD_MOUNTAINS');
-        this.emit('LOAD_MOUNTAINS');
-        MAP_COORDS.MIN_X = parseInt(MAPS[mapId].bounds.MIN_X);
-        MAP_COORDS.MIN_Y = parseInt(MAPS[mapId].bounds.MIN_Y);
-        MAP_COORDS.MAX_X = parseInt(MAPS[mapId].bounds.MAX_X);
-        MAP_COORDS.MAX_Y = parseInt(MAPS[mapId].bounds.MAX_Y);
-        COLLISIONS_MAP_COORDS.MIN_X = MAP_COORDS.MIN_X + MAP_SIZE.HALF_WIDTH;
-        COLLISIONS_MAP_COORDS.MIN_Y = MAP_COORDS.MIN_Y + MAP_SIZE.HALF_HEIGHT;
-        COLLISIONS_MAP_COORDS.MAX_X = MAP_COORDS.MAX_X + MAP_SIZE.HALF_WIDTH;
-        COLLISIONS_MAP_COORDS.MAX_Y = MAP_COORDS.MAX_Y + MAP_SIZE.HALF_HEIGHT;
-        PLAYERS_POSITION.MIN_X = MAP_COORDS.MIN_X + 32;
-        PLAYERS_POSITION.MIN_Y = MAP_COORDS.MIN_Y + 32;
-        PLAYERS_POSITION.MAX_X = MAP_COORDS.MAX_X - 32;
-        PLAYERS_POSITION.MAX_Y = MAP_COORDS.MAX_Y - 32;
+        // const [,mapId] = command.split(' ');
+        // this.config.server.mapId = mapId;
+        // if (mapId != 'vanilla')
+        //   this.config.ctf.extraSpawns = false;
+        // this.emit('UNLOAD_MOUNTAINS');
+        // this.emit('LOAD_MOUNTAINS');
+        // MAP_COORDS.MIN_X = parseInt(MAPS[mapId].bounds.MIN_X);
+        // MAP_COORDS.MIN_Y = parseInt(MAPS[mapId].bounds.MIN_Y);
+        // MAP_COORDS.MAX_X = parseInt(MAPS[mapId].bounds.MAX_X);
+        // MAP_COORDS.MAX_Y = parseInt(MAPS[mapId].bounds.MAX_Y);
+        // COLLISIONS_MAP_COORDS.MIN_X = MAP_COORDS.MIN_X + MAP_SIZE.HALF_WIDTH;
+        // COLLISIONS_MAP_COORDS.MIN_Y = MAP_COORDS.MIN_Y + MAP_SIZE.HALF_HEIGHT;
+        // COLLISIONS_MAP_COORDS.MAX_X = MAP_COORDS.MAX_X + MAP_SIZE.HALF_WIDTH;
+        // COLLISIONS_MAP_COORDS.MAX_Y = MAP_COORDS.MAX_Y + MAP_SIZE.HALF_HEIGHT;
+        // PLAYERS_POSITION.MIN_X = MAP_COORDS.MIN_X + 32;
+        // PLAYERS_POSITION.MIN_Y = MAP_COORDS.MIN_Y + 32;
+        // PLAYERS_POSITION.MAX_X = MAP_COORDS.MAX_X - 32;
+        // PLAYERS_POSITION.MAX_Y = MAP_COORDS.MAX_Y - 32;
 
-        const broadcast_recipients = [...this.storage.mainConnectionIdList];
-        this.emit(
-          CONNECTIONS_SEND_PACKETS,
-          {
-            c: SERVER_PACKETS.SERVER_CUSTOM,
-            type: 203 as SERVER_CUSTOM_TYPES, //TODO: add new SERVER_CUSTOM_TYPES,
-            data: JSON.stringify({
-              playerBounds: PLAYERS_POSITION,
-              mapBounds: MAP_COORDS,
-              mapId
-            }),
-          } as ServerPackets.ServerCustom,
-          broadcast_recipients
-        );  
+        // const broadcast_recipients = [...this.storage.mainConnectionIdList];
+        // this.emit(
+        //   CONNECTIONS_SEND_PACKETS,
+        //   {
+        //     c: SERVER_PACKETS.SERVER_CUSTOM,
+        //     type: 203 as SERVER_CUSTOM_TYPES, //TODO: add new SERVER_CUSTOM_TYPES,
+        //     data: JSON.stringify({
+        //       playerBounds: PLAYERS_POSITION,
+        //       mapBounds: MAP_COORDS,
+        //       mapId
+        //     }),
+        //   } as ServerPackets.ServerCustom,
+        //   broadcast_recipients
+        // );  
 
-        this.emit('MAP_CHANGED');
+        // this.emit('MAP_CHANGED');
       }
 
       if (command.startsWith('test')) {

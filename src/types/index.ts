@@ -377,9 +377,14 @@ export interface LoginServerConfig {
   /**
    * Map
    */
-  playerBounds: { MIN_X: number, MIN_Y: number, MAX_X: number, MAX_Y: number };
-  mapBounds: { MIN_X: number, MIN_Y: number, MAX_X: number, MAX_Y: number };
-  mapId: string;
+  // playerBounds: { MIN_X: number, MIN_Y: number, MAX_X: number, MAX_Y: number };
+  // mapBounds: { MIN_X: number, MIN_Y: number, MAX_X: number, MAX_Y: number };
+  // mapId: string;
+
+  /**
+   * Ships types
+   */
+  //ships: string[]
 }
 
 export interface AdminPlayersListItem {

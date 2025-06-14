@@ -65,8 +65,8 @@ export default class CustomDataBroadcast extends System {
 
     // send available skins (only if no localStorage)
     if (player.customdata && player.customdata.custom_data.my_skins_len === null) {
-      const skins = this.storage.skins.byUser.get(player.user.id).map(x=>x.url);
-      if (skins.length) {
+      const skins = this.storage.skins.byUser.get(player.user?.id)?.map(x=>x.url);
+      if (skins?.length) {
         this.emit(
           CONNECTIONS_SEND_PACKETS,
           {

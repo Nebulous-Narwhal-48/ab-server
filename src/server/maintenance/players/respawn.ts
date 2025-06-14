@@ -6,7 +6,8 @@ import {
   PLAYERS_HEALTH,
   PLAYERS_RESPAWN_INACTIVITY_MS,
   PLAYERS_SPAWN_SHIELD_DURATION_MS,
-  SHIPS_TYPES,
+  SHIPS_SPECS,
+  SPECIAL_ABILITIES,
 } from '../../../constants';
 import {
   BROADCAST_PLAYER_RESPAWN,
@@ -96,7 +97,7 @@ export default class GamePlayersRespawn extends System {
         this.emit(PLAYERS_SET_SHIP_TYPE, player, shipType);
 
         isNewShipType = true;
-      } else if (player.planetype.current === SHIPS_TYPES.GOLIATH) {
+      } else if (SHIPS_SPECS[player.planetype.current].special === SPECIAL_ABILITIES.REPEL) {
         this.emit(PLAYERS_REPEL_UPDATE, player.id.current, player.position.x, player.position.y);
       }
 

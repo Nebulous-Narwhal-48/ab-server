@@ -562,7 +562,7 @@ export default class WsEndpoint {
         res
           .writeHeader('Content-type', 'application/json')
           .end(
-            `{"players":${this.storage.playerList.size},"bots":${this.storage.botIdList.size},"spectators":${this.storage.playerInSpecModeList.size}${gameModeResponse}}`
+            `{"players":${this.storage.playerList.size},"bots":${this.storage.botIdList.size},"spectators":${this.storage.playerInSpecModeList.size}${gameModeResponse}},"type":${this.config.server.typeId}`
           );
       })
 

@@ -1,0 +1,56 @@
+{
+    "name": "mohawk",
+    "displayName": "Mohawk",
+    "special": 3,
+    "turnFactor": 0.07,
+    "accelFactor": 0.275,
+    "brakeFactor": 0.025,
+    "boostFactor": 1,
+    "infernoFactor": 0.75,
+    "maxSpeed": 6,
+    "minSpeed": 0.001,
+    "flagSpeed": 5,
+    "healthRegen": 0.001,
+    "energyRegen": 0.01,
+    "fireEnergy": 0.3,
+    "specialEnergy": 0,
+    "specialEnergyRegen": 0,
+    "specialDelay": 0,
+    "fireDelay": 300,
+    "damageFactor": 2.87,
+    "energyLight": 0.3,
+    "collisions": [
+        [ 0, -12, 15 ],
+        [ 0, 0, 17 ],
+        [ 0, 13, 15 ],
+        [ 0, 26, 15 ]
+    ],
+    "enclose_radius": 34,
+    "repelEnergy": 1800,
+    "fire": {
+        "default": [ { "type": 3, "x": 15, "y": 10, "rot": 0, "alt": true } ],
+        "special": []
+    },
+    "infernoFire": {
+        "default": [
+            { "type": 3, "x": -10, "y": 5, "rot": -0.05, "alt": false },
+            { "type": 3, "x": 0, "y": 10, "rot": 0, "alt": false },
+            { "type": 3, "x": 10, "y": 5, "rot": 0.05, "alt": false }
+        ],
+        "special": []
+    },
+    "graphics": {
+        "size": { "w": 128, "h": 256 },
+        "baseScale": 0.25,
+        "anchor": [0.5, 0.4],
+        "thrusters": [],
+        "rotors": [ {"scale":2, "alpha":0.8, "shadow_scale":2.4} ],
+        "explosion": { "params": [ 1.5, 2, 2, 3 ] }
+    },
+    "sound": {
+        "asset": "chopper",
+        "kill_volume": 0.7,
+        "thruster_playback_rate": 0.8,
+        "thruster_volume": 0.35
+    }
+}

@@ -1,5 +1,5 @@
 import { encodeUpgrades, ServerPackets, SERVER_PACKETS } from '@airbattle/protocol';
-import { PLAYERS_ALIVE_STATUSES, SHIPS_TYPES } from '../../constants';
+import { DEFAULT_SHIP_TYPE, PLAYERS_ALIVE_STATUSES } from '../../constants';
 import { CONNECTIONS_SEND_PACKETS, RESPONSE_SERVER_PLAYER_CONNECT } from '../../events';
 import { MainConnectionId } from '../../types';
 import { System } from '../system';
@@ -28,7 +28,7 @@ export default class ServerPlayerConnectResponse extends System {
         id: this.storage.serverPlayerId,
         status: PLAYERS_ALIVE_STATUSES.DEAD,
         name: this.config.server.bot.name,
-        type: SHIPS_TYPES.PREDATOR,
+        type: DEFAULT_SHIP_TYPE,
         team: this.storage.serverPlayerId,
         posX: 0,
         posY: 0,

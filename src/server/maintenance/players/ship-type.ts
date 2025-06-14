@@ -1,4 +1,4 @@
-import { SHIPS_SPECS, SHIPS_TYPES, UPGRADES_SPECS } from '../../../constants';
+import { SHIPS_SPECS, SPECIAL_ABILITIES, UPGRADES_SPECS } from '../../../constants';
 import { PLAYERS_REPEL_ADD, PLAYERS_REPEL_DELETE, PLAYERS_SET_SHIP_TYPE } from '../../../events';
 import { Player } from '../../../types';
 import { System } from '../../system';
@@ -20,11 +20,11 @@ export default class GamePlayersShipType extends System {
     player.energy.regen =
       SHIPS_SPECS[shipType].energyRegen * UPGRADES_SPECS.ENERGY.factor[player.upgrades.energy];
 
-    if (previousType === SHIPS_TYPES.GOLIATH) {
+    if (SHIPS_SPECS[previousType].special === SPECIAL_ABILITIES.REPEL) {
       this.emit(PLAYERS_REPEL_DELETE, player);
     }
 
-    if (shipType === SHIPS_TYPES.GOLIATH) {
+    if (SHIPS_SPECS[shipType].special === SPECIAL_ABILITIES.REPEL) {
       this.emit(PLAYERS_REPEL_ADD, player);
     }
   }

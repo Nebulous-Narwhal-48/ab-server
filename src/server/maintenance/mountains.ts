@@ -64,6 +64,8 @@ export default class GameMountains extends System {
   }
 
   unloadMountains(): void {
+    if (!this.start_id)
+      return;
     for (let id = this.start_id; id <= this.end_id; id++) {
       const mountain = this.storage.mobList.get(id);
       this.emit(COLLISIONS_REMOVE_OBJECT, mountain.hitbox.current);

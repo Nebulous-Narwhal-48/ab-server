@@ -1,0 +1,62 @@
+{
+    "name": "prowler",
+    "displayName": "Prowler",
+    "special": 5,
+    "turnFactor": 0.055,
+    "accelFactor": 0.2,
+    "brakeFactor": 0.025,
+    "boostFactor": 1,
+    "infernoFactor": 0.75,
+    "maxSpeed": 4.5,
+    "minSpeed": 0.001,
+    "flagSpeed": 5,
+    "healthRegen": 0.001,
+    "energyRegen": 0.006,
+    "fireEnergy": 0.75,
+    "specialEnergy": 0.6,
+    "specialEnergyRegen": 0,
+    "specialDelay": 1500,
+    "damageFactor": 1.6666666666666667,
+    "fireDelay": 300,
+    "energyLight": 0.75,
+    "collisions": [
+        [ 0, 11, 25 ],
+        [ 0, -8, 18 ],
+        [ 19, 20, 10 ],
+        [ -19, 20, 10 ],
+        [ 0, -20, 14 ]
+    ],
+    "enclose_radius": 36,
+    "repelEnergy": 2600,
+    "fire": {
+        "default": [
+            { "type": 7, "x": 0, "y": 35, "rot": 0, "alt": true }
+        ],
+        "special": []
+    },
+    "infernoFire": {
+        "default": [
+            { "type": 7, "x": -20, "y": 0, "rot": -0.05, "alt": false },
+            { "type": 7, "x": 0, "y": 35, "rot": 0, "alt": false },
+            { "type": 7, "x": 20, "y": 0, "rot": 0.05, "alt": false }
+        ],
+        "special": []
+    },
+    "graphics": {
+        "size": {"w": 256, "h": 256},
+        "baseScale": 0.28,
+        "anchor": [0.5, 0.5],
+        "thrusters": [
+            {"pos_angle":0.35, "pos_radius":20, "rot_factor":0.5, "scale_x":0.3, "scale_y":0.4, "glow_pos_angle1":-0.2, "glow_pos_angle2":0, "glow_pos_radius":35, "glow_scale_x":2.5, "glow_scale_y":1.5, "glow_alpha_factor":0.2},
+            {"pos_angle":-0.35, "pos_radius":20, "rot_factor":0.5, "scale_x":0.3, "scale_y":0.4, "glow_pos_angle1":0.2, "glow_pos_angle2":0, "glow_pos_radius":35, "glow_scale_x":2.5, "glow_scale_y":1.5, "glow_alpha_factor":0.2}
+        ],
+        "rotors": [],
+        "explosion": {"params":[1.5, 2, 2, 3]}
+    },
+    "sound": {
+        "asset": "thruster",
+        "kill_volume": 0.8,
+        "thruster_playback_rate": 1.7,
+        "thruster_volume": 1
+    }
+}

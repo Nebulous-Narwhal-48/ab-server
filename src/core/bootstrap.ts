@@ -13,6 +13,7 @@ import {
   loadMaps,
   MAPS,
   GAME_TYPES,
+  loadShips,
 } from '../constants';
 import WsEndpoint from '../endpoints/ws';
 import {
@@ -330,6 +331,8 @@ export default class GameServerBootstrap implements GameServerBootstrapInterface
     await this.initEndpoints();
     await this.initGeoCoder();
     
+    await loadShips(this.config.shipsPath);
+
     await loadMaps(this.config.mapsPath);
     this.storage.spawnZoneSet = {} as any;
     this.storage.powerupSpawns = {} as any;

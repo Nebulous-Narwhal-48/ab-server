@@ -2,7 +2,7 @@ import { encodeUpgrades, ServerPackets, SERVER_PACKETS, GAME_TYPES } from '@airb
 import { CONNECTIONS_SEND_PACKETS, RESPONSE_LOGIN, TIMELINE_BEFORE_LOOP_START } from '../../events';
 import { LoginServerConfig, MainConnectionId, Player } from '../../types';
 import { System } from '../system';
-import { MAP_COORDS, PLAYERS_POSITION } from '../../constants';
+import { MAP_COORDS, PLAYERS_POSITION, SHIPS_SPECS } from '../../constants';
 
 export default class LoginResponse extends System {
   /**
@@ -25,9 +25,10 @@ export default class LoginResponse extends System {
       sf: this.config.server.scaleFactor,
       botsNamePrefix: this.config.bots.prefix,
       tdmMode: this.config.server.typeId == GAME_TYPES.FFA && this.config.ffa.tdmMode,
-      playerBounds: PLAYERS_POSITION,
-      mapBounds: MAP_COORDS,
-      mapId: this.config.server.mapId,
+      // playerBounds: PLAYERS_POSITION,
+      // mapBounds: MAP_COORDS,
+      // mapId: this.config.server.mapId,
+      //ships: [...new Array(SHIPS_SPECS.length)].map((_,i)=>SHIPS_SPECS[i]?.name)
     };
 
     if (this.config.connections.afkDisconnectTimeout) {

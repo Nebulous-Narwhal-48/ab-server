@@ -5,7 +5,7 @@ import {
   MS_PER_SEC,
   PLAYERS_ALIVE_STATUSES,
   PLAYERS_HEALTH,
-  SHIPS_NAMES,
+  SHIPS_SPECS,
 } from '../../../constants';
 import {
   BROADCAST_GAME_FIREWALL,
@@ -208,7 +208,7 @@ export default class GameMatches extends System {
            * Match can only be started if two or more players are still present.
            */
           const messagePrefix = `${
-            SHIPS_NAMES[this.storage.gameEntity.match.shipType]
+            SHIPS_SPECS[this.storage.gameEntity.match.shipType].displayName
           } round starting`;
           const { matchWaitTime } = this.config.btr;
 

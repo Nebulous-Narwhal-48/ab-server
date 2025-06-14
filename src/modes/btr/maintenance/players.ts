@@ -1,5 +1,5 @@
 import { SERVER_MESSAGE_TYPES } from '@airbattle/protocol';
-import { MS_PER_SEC, PLAYERS_ALIVE_STATUSES, SHIPS_ENCLOSE_RADIUS } from '../../../constants';
+import { MS_PER_SEC, PLAYERS_ALIVE_STATUSES, SHIPS_SPECS } from '../../../constants';
 import {
   BROADCAST_GAME_FIREWALL,
   BROADCAST_PLAYER_RETEAM,
@@ -70,7 +70,7 @@ export default class GamePlayers extends System {
     const spawnZones = this.storage.spawnZoneSet[this.config.server.typeId][this.config.server.mapId].get(zoneSetIndex).get(0/*player.planetype.current*/);
 
     [x, y] = spawnZones.get(getRandomInt(0, spawnZones.size - 1));
-    r = SHIPS_ENCLOSE_RADIUS[player.planetype.current] / 2;
+    r = SHIPS_SPECS[player.planetype.current].enclose_radius / 2;
 
     player.position.x = x + getRandomInt(-r, r);
     player.position.y = y + getRandomInt(-r, r);

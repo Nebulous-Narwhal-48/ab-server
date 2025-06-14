@@ -279,6 +279,11 @@ export interface GameServerConfigInterface {
   mapsPath: string;
 
   /**
+   * Ships dir (data/ships)
+   */
+  shipsPath: string;
+
+  /**
    * How often metrics collect data, in seconds.
    */
   metricsInterval: number;
@@ -659,6 +664,8 @@ const config: GameServerConfigInterface = {
   geoBasePath: resolvePath(SERVER_DEFAULT_GEO_DB_PATH),
 
   mapsPath: resolvePath('../data/maps'),
+
+  shipsPath: resolvePath('../data/ships'),
 
   metricsInterval: METRICS_LOG_INTERVAL_SEC,
 

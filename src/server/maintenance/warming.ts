@@ -3,6 +3,7 @@ import {
   CTF_FLAGS_SPAWN_ZONE_COLLISION_WIDTH,
   CTF_FLAG_COLLISIONS,
   GAME_TYPES,
+  LARGEST_SHIP_TYPE,
   MAPS,
   MAP_COORDS,
   PI_X2,
@@ -10,9 +11,7 @@ import {
   POWERUPS_RESPAWN_TIMEOUT_MS,
   PROJECTILES_COLLISIONS,
   PROJECTILES_SHAPES,
-  SHIPS_ENCLOSE_RADIUS,
   SHIPS_SPECS,
-  SHIPS_TYPES,
 } from '../../constants';
 import { TIMELINE_BEFORE_LOOP_START } from '../../events';
 import { has } from '../../support/objects';
@@ -267,11 +266,10 @@ export default class GameWarming extends System {
   warmCollisionCache(): void {
     this.log.info('Warm up the cache. It will take some time...');
 
-    Object.values(SHIPS_TYPES).forEach(shipType => {
-      this.storage.shipHitboxesCache[shipType] = GameWarming.getHitboxCache(
-        SHIPS_SPECS[shipType].collisions
-      );
-    });
+    for (let i=1; i<SHIPS_SPECS.length; i++) {
+      if (SHIPS_SPECS[i])
+        this.storage.shipHitboxesCache[i] = GameWarming.getHitboxCache(SHIPS_SPECS[i].collisions);
+    }
 
     this.storage.shipHitboxesCache = Object.freeze(this.storage.shipHitboxesCache);
 
@@ -308,8 +306,7 @@ export default class GameWarming extends System {
 
           this.storage.spawnZoneSet[typeId][mapId].set(index, spawnZoneSetIndex);
 
-          //Object.values(SHIPS_TYPES).forEach(shipType => {
-          [2].forEach(shipType => {
+          [LARGEST_SHIP_TYPE].forEach(shipType => {
             const planeSpawnZones = new Map<number, [number, number]>();
             spawnZoneSetIndex.set(0/*shipType*/, planeSpawnZones);
 
@@ -319,7 +316,7 @@ export default class GameWarming extends System {
               generateSpawnZones(
                 mapId,
                 planeSpawnZones,
-                SHIPS_ENCLOSE_RADIUS[shipType],
+                SHIPS_SPECS[shipType].enclose_radius,
                 gameSpawnZones[index]
               );
             }

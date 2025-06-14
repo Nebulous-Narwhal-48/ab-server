@@ -29,7 +29,7 @@ import {
   SHIPS_FIRE_MODES,
   SHIPS_FIRE_TYPES,
   SHIPS_SPECS,
-  SHIPS_TYPES,
+  SPECIAL_ABILITIES,
   UPGRADES_SPECS,
 } from '../../../constants';
 import {
@@ -259,7 +259,7 @@ export default class GamePlayersUpdate extends System {
 
         if (
           player.keystate.FIRE ||
-          (player.keystate.SPECIAL && player.planetype.current === SHIPS_TYPES.TORNADO)
+          (player.keystate.SPECIAL && SHIPS_SPECS[player.planetype.current].special === SPECIAL_ABILITIES.FIRE)
         ) {
           player.planestate.fire = true;
         } else {
@@ -329,7 +329,7 @@ export default class GamePlayersUpdate extends System {
         /**
          * Special handle.
          */
-        if (player.planetype.current === SHIPS_TYPES.PREDATOR) {
+        if (SHIPS_SPECS[player.planetype.current].special === SPECIAL_ABILITIES.BOOST) {
           const isBoost =
             player.keystate.SPECIAL &&
             (player.keystate.UP || player.keystate.DOWN) &&
@@ -354,7 +354,7 @@ export default class GamePlayersUpdate extends System {
             player.energy.regen = SHIP_SPECS.specialEnergyRegen;
             energyDiff = SHIP_SPECS.specialEnergyRegen * compensationFactor;
           }
-        } else if (player.planetype.current === SHIPS_TYPES.GOLIATH) {
+        } else if (SHIPS_SPECS[player.planetype.current].special === SPECIAL_ABILITIES.REPEL) {
           /**
            * Repel handle.
            */
@@ -367,12 +367,12 @@ export default class GamePlayersUpdate extends System {
             energyDiff = -SHIP_SPECS.specialEnergy;
             player.times.lastRepel = this.now;
           }
-        } else if (player.planetype.current === SHIPS_TYPES.COPTER) {
+        } else if (SHIPS_SPECS[player.planetype.current].special === SPECIAL_ABILITIES.STRAFE) {
           /**
            * Copter side moves.
            */
           player.planestate.strafe = player.keystate.SPECIAL;
-        } else if (player.planetype.current === SHIPS_TYPES.PROWLER && player.keystate.SPECIAL) {
+        } else if (SHIPS_SPECS[player.planetype.current].special === SPECIAL_ABILITIES.STEALTH && player.keystate.SPECIAL) {
           /**
            * Prowler special.
            */
@@ -617,7 +617,7 @@ export default class GamePlayersUpdate extends System {
         /**
          * Update repel if active.
          */
-        if (player.planetype.current === SHIPS_TYPES.GOLIATH && player.planestate.repel) {
+        if (SHIPS_SPECS[player.planetype.current].special === SPECIAL_ABILITIES.REPEL && player.planestate.repel) {
           this.emit(PLAYERS_REPEL_UPDATE, player.id.current, player.position.x, player.position.y);
         }
 

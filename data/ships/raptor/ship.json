@@ -1,0 +1,67 @@
+{
+  "name": "raptor",
+  "displayName": "Predator",
+
+  "special": 1,
+
+  "turnFactor": 0.065,
+  "accelFactor": 0.225,
+  "brakeFactor": 0.025,
+  "boostFactor": 1.5,
+  "infernoFactor": 0.75,
+
+  "maxSpeed": 5.5,
+  "minSpeed": 0.001,
+  "flagSpeed": 5,
+
+  "healthRegen": 0.001,
+  "energyRegen": 0.008,
+  "fireEnergy": 0.6,
+  "specialEnergy": 0,
+  "specialEnergyRegen": -0.01,
+  "specialDelay": 0,
+
+  "fireDelay": 550,
+  "damageFactor": 2,
+  "energyLight": 0.6,
+
+  "collisions": [
+    [0, 5, 23],
+    [0, -15, 15],
+    [0, -25, 12]
+  ],
+  "enclose_radius": 32,
+
+  "repelEnergy": 2100,
+
+  "fire": {
+    "default": [{ "type": 1, "x": 0, "y": 35, "rot": 0, "alt": false }],
+    "special": []
+  },
+
+  "infernoFire": {
+    "default": [
+      { "type": 1, "x": -20, "y": 5, "rot": -0.05, "alt": false },
+      { "type": 1, "x": 0, "y": 35, "rot": 0, "alt": false },
+      { "type": 1, "x": 20, "y": 5, "rot": 0.05, "alt": false }
+    ],
+    "special": []
+  },
+
+  "graphics": {
+      "size": {"w": 256, "h": 256},
+      "baseScale": 0.25,
+      "anchor": [0.5, 0.6],
+      "thrusters": [
+          {"pos_angle":0, "pos_radius":20, "rot_factor":1, "scale_x":0.3, "scale_y":0.5, "glow_pos_angle1":0, "glow_pos_angle2":0.5, "glow_pos_radius":40, "glow_scale_x":1.5, "glow_scale_y":1, "glow_alpha_factor":0.3}
+      ],
+      "rotors": [],
+      "explosion": {"params":[1.5, 2, 2, 3]}
+  },
+  "sound": {
+      "asset": "thruster",
+      "kill_volume": 0.8,
+      "thruster_playback_rate": 1.5,
+      "thruster_volume": 1
+  }
+}

@@ -1,0 +1,73 @@
+{
+    "name": "tornado",
+    "displayName": "Tornado",
+    "special": 4,
+    "turnFactor": 0.055,
+    "accelFactor": 0.2,
+    "brakeFactor": 0.025,
+    "boostFactor": 1,
+    "infernoFactor": 0.75,
+    "maxSpeed": 4.5,
+    "minSpeed": 0.001,
+    "flagSpeed": 5,
+    "healthRegen": 0.001,
+    "energyRegen": 0.006,
+    "fireEnergy": 0.5,
+    "specialEnergy": 0.9,
+    "specialEnergyRegen": 0,
+    "specialDelay": 0,
+    "fireDelay": 500,
+    "damageFactor": 1.564516129032258,
+    "energyLight": 0.5,
+    "collisions": [
+        [ 0, 8, 18 ],
+        [ 14, 12, 13 ],
+        [ -14, 12, 13 ],
+        [ 0, -12, 16 ],
+        [ 0, -26, 14 ],
+        [ 0, -35, 12 ]
+    ],
+    "enclose_radius": 38,
+    "repelEnergy": 2400,
+    "fire": {
+        "default": [
+            { "type": 5, "x": 0, "y": 40, "rot": 0, "alt": false }
+        ],
+        "special": [
+            { "type": 6, "x": -15, "y": 10, "rot": -0.05, "alt": false },
+            { "type": 6, "x": 0, "y": 40, "rot": 0, "alt": false },
+            { "type": 6, "x": 15, "y": 10, "rot": 0.05, "alt": false }
+        ]
+    },
+    "infernoFire": {
+        "default": [
+            { "type": 5, "x": -15, "y": 10, "rot": -0.05, "alt": false },
+            { "type": 5, "x": 0, "y": 40, "rot": 0, "alt": false },
+            { "type": 5, "x": 15, "y": 10, "rot": 0.05, "alt": false }
+        ],
+        "special": [
+            { "type": 5, "x": -30, "y": 20, "rot": -0.06, "alt": false },
+            { "type": 5, "x": -20, "y": 15, "rot": -0.03, "alt": false },
+            { "type": 5, "x": 0, "y": 40, "rot": 0, "alt": false },
+            { "type": 5, "x": 20, "y": 15, "rot": 0.03, "alt": false },
+            { "type": 5, "x": 30, "y": 20, "rot": 0.06, "alt": false }
+        ]
+    },
+    "graphics": {
+        "size": { "w": 256, "h": 256 },
+        "baseScale": 0.28,
+        "anchor": [0.5, 0.65],
+        "thrusters": [
+            {"pos_angle":0.15, "pos_radius":28, "rot_factor":0.5, "scale_x":0.3, "scale_y":0.5, "glow_pos_angle1":-0.2, "glow_pos_angle2":0, "glow_pos_radius":45, "glow_scale_x":2.5, "glow_scale_y":1.5, "glow_alpha_factor":0.25},
+            {"pos_angle":-0.15, "pos_radius":28, "rot_factor":0.5, "scale_x":0.3, "scale_y":0.5, "glow_pos_angle1":0.2, "glow_pos_angle2":0, "glow_pos_radius":45, "glow_scale_x":2.5, "glow_scale_y":1.5, "glow_alpha_factor":0.25}
+        ],
+        "rotors": [],
+        "explosion": { "params": [ 1.5, 2, 2, 3 ] }
+    },
+    "sound": {
+        "asset": "thruster",
+        "kill_volume": 0.8,
+        "thruster_playback_rate": 1.35,
+        "thruster_volume": 1
+    }
+}

@@ -1,5 +1,5 @@
 import { ClientPackets, KEY_CODES, KEY_NAMES } from '@airbattle/protocol';
-import { LIMITS_KEY_WEIGHT, PLAYERS_ALIVE_STATUSES, SHIPS_TYPES } from '../../constants';
+import { LIMITS_KEY_WEIGHT, PLAYERS_ALIVE_STATUSES, SPECIAL_ABILITIES, SHIPS_SPECS } from '../../constants';
 import { CONNECTIONS_KICK, ROUTE_KEY } from '../../events';
 import { ConnectionId } from '../../types';
 import { System } from '../system';
@@ -78,7 +78,8 @@ export default class KeyMessageHandler extends System {
 
       if (
         msg.key !== KEY_CODES.SPECIAL ||
-        (msg.key === KEY_CODES.SPECIAL && player.planetype.current === SHIPS_TYPES.COPTER)
+        //(msg.key === KEY_CODES.SPECIAL && player.planetype.current === SHIPS_TYPES.COPTER)
+        (msg.key === KEY_CODES.SPECIAL && SHIPS_SPECS[player.planetype.current].special === SPECIAL_ABILITIES.STRAFE)
       ) {
         player.delayed.BROADCAST_PLAYER_UPDATE = true;
       }

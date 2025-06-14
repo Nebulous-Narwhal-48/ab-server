@@ -1,5 +1,4 @@
 import { SpawnZone } from '../types';
-import { SHIPS_TYPES } from './ships';
 
 export const BTR_WIN_ALERT_DURATION_SEC = 13;
 
@@ -16,12 +15,12 @@ export const BTR_WIN_ALERT_DURATION_SEC = 13;
 
 export const BTR_DEFAULT_MATCH_WAIT_TIME = 70;
 
-export const BTR_SHIPS_TYPES_ORDER = [
-  SHIPS_TYPES.PREDATOR,
-  SHIPS_TYPES.GOLIATH,
-  SHIPS_TYPES.COPTER,
-  SHIPS_TYPES.TORNADO,
-];
+// export const BTR_SHIPS_TYPES_ORDER = [
+//   SHIPS_TYPES.PREDATOR,
+//   SHIPS_TYPES.GOLIATH,
+//   SHIPS_TYPES.COPTER,
+//   SHIPS_TYPES.TORNADO,
+// ];
 
 // export const BTR_SPAWN_WAITING: SpawnZone = {
 //   MIN_X: -120,
