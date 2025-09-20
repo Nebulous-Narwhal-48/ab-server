@@ -1,7 +1,4 @@
->*Notes about this fork
->
->Reference client: 
->- https://github.com/Nebulous-Narwhal-48/airmash-frontend  
+>*Notes about this fork 
 >
 >New features:
 >- New game mode: Conquest
